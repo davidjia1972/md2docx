@@ -1,0 +1,228 @@
+{
+  "app": {
+    "title": "Markdown から DOCX コンバーター",
+    "name": "Markdown から DOCX コンバーター"
+  },
+  "ui": {
+    "drag_drop": {
+      "text": "ファイルやフォルダーをここにドラッグアンドドロップ",
+      "select_files": "ファイルを選択",
+      "select_folder": "フォルダーを選択"
+    },
+    "buttons": {
+      "start": "開始",
+      "cancel": "キャンセル",
+      "browse": "参照...",
+      "ok": "OK",
+      "yes": "はい",
+      "no": "いいえ"
+    },
+    "labels": {
+      "files_to_convert": "📋 変換するファイル",
+      "file_stats": "📊 {count} ファイル",
+      "recursive_scan": "サブディレクトリ内のMarkdownファイルを再帰的に検索",
+      "conversion_settings": "変換設定",
+      "template": "テンプレート:",
+      "file_handling": "ファイル処理:",
+      "language": "言語:"
+    },
+    "options": {
+      "overwrite": "上書き",
+      "auto_rename": "自動リネーム",
+      "auto_detect_language": "自動検出",
+      "remove_emoji": "絵文字を削除"
+    },
+    "status": {
+      "pandoc_not_installed": "⚠️ Pandoc がインストールされていません",
+      "pandoc_ready": "✅ {version}",
+      "starting_conversion": "変換を開始しています...",
+      "conversion_completed": "✅ 変換完了！{successful} ファイルの変換に成功しました",
+      "conversion_completed_with_failures": "⚠️ 変換完了、{successful} 成功、{failed} 失敗",
+      "conversion_failed": "❌ 変換に失敗しました: {error}"
+    },
+    "tooltips": {
+      "delete_from_list": "リストから削除",
+      "language_load_failed": "言語読み込みエラー",
+      "remove_emoji": "変換前にmarkdownファイルから絵文字文字をすべて自動的に削除する"
+    }
+  },
+  "menu": {
+    "context": {
+      "remove_from_list": "🗑️ リストから削除",
+      "show_in_folder": "📁 フォルダーで表示"
+    }
+  },
+  "dialogs": {
+    "pandoc_not_installed": {
+      "title": "Pandoc がインストールされていません",
+      "message": "Pandoc が見つかりませんでした。変換機能を使用する前に Pandoc をインストールしてください。"
+    },
+    "pandoc_version_notice": {
+      "title": "Pandoc バージョン情報"
+    },
+    "file_scan_failed": {
+      "title": "ファイルスキャンに失敗",
+      "message": "ファイルのスキャン中にエラーが発生しました: {error}"
+    },
+    "validation_failed": {
+      "title": "検証に失敗"
+    },
+    "conversion_failed": {
+      "title": "変換に失敗",
+      "message": "変換を開始できません。既に実行中の可能性があります"
+    },
+    "conversion_complete": {
+      "title": "変換完了",
+      "message": "{successful}/{total} ファイルの変換に成功しました"
+    },
+    "conversion_complete_with_failures": {
+      "title": "変換完了（エラーあり）"
+    },
+    "conversion_error": {
+      "title": "変換エラー"
+    },
+    "confirm_close": {
+      "title": "終了の確認",
+      "message": "変換が進行中です。プログラムを終了してもよろしいですか？"
+    },
+    "add_template_success": {
+      "title": "成功"
+    },
+    "add_template_failed": {
+      "title": "テンプレートの追加に失敗"
+    },
+    "open_folder_error": {
+      "title": "フォルダーを開く",
+      "message": "フォルダーを開けません: {error}"
+    },
+    "file_not_exist": {
+      "title": "ファイルが存在しません",
+      "message": "このファイルは存在しないか、移動されています"
+    },
+    "select_files_first": {
+      "title": "ヒント",
+      "message": "まず変換する Markdown ファイルを選択してください"
+    },
+    "install_pandoc_first": {
+      "title": "Pandoc がインストールされていません",
+      "message": "まず Pandoc をインストールしてください"
+    },
+    "missing_components": {
+      "title": "必要なコンポーネントがありません",
+      "message_prefix": "必要なコンポーネントがありません:",
+      "message_suffix": "不足しているコンポーネントをインストールし、プログラムを再起動してください。"
+    },
+    "startup_error": {
+      "title": "起動エラー",
+      "message": "起動中にエラーが発生しました:\n\n{error}\n\n詳細については、ログファイルを確認してください。"
+    },
+    "conversion_results": {
+      "summary": "変換結果:\n\n成功: {successful} ファイル\n失敗: {failed} ファイル",
+      "failed_files_header": "失敗したファイル:",
+      "more_files": "... その他 {count} ファイル"
+    }
+  },
+  "templates": {
+    "no_templates": "使用可能なテンプレートがありません",
+    "error_loading": "テンプレートの読み込みエラー"
+  },
+  "file_operations": {
+    "select_markdown_files": "Markdown ファイルを選択",
+    "markdown_filter": "Markdown ファイル (*.md *.markdown);;すべてのファイル (*.*)",
+    "select_directory": "ディレクトリを選択",
+    "select_template_file": "DOCX テンプレートファイルを選択",
+    "word_documents_filter": "Word 文書 (*.docx);;すべてのファイル (*.*)"
+  },
+  "messages": {
+    "removed_from_list": "リストからファイルを削除しました: {filename}",
+    "file_not_in_list": "ファイルがリストにありません: {filepath}"
+  },
+  "context_menu": {
+    "remove_from_list": "🗑️ リストから削除",
+    "show_in_folder": "📁 フォルダーで表示"
+  },
+  "file_errors": {
+    "open_folder_failed": "フォルダーを開けません: {error}",
+    "file_not_exist": "このファイルは存在しないか、移動されています"
+  },
+  "validation": {
+    "pandoc_not_available": "Pandoc がインストールされていないか利用できません",
+    "pandoc_not_installed": "Pandoc がインストールされていません",
+    "no_files_selected": "Markdown ファイルが選択されていません",
+    "no_valid_files": "有効な Markdown ファイルが見つかりません",
+    "success": "検証に成功しました。{count} 個の有効なファイルが見つかりました",
+    "template_not_exist": "テンプレートファイルが存在しません: {path}",
+    "template_invalid": "無効なテンプレートファイル: {error}",
+    "file_not_exist": "入力ファイルが存在しません: {path}"
+  },
+  "conversion": {
+    "success": "変換に成功しました: {input} -> {output}",
+    "failed": "変換に失敗しました: {error}",
+    "timeout": "変換がタイムアウトしました（5分を超過）",
+    "no_output": "変換は完了しましたが、出力ファイルが生成されませんでした",
+    "pandoc_error": "Pandoc の実行エラー: {error}",
+    "system_error": "システムエラー: {error}",
+    "unknown_error": "変換中に不明なエラーが発生しました: {error}",
+    "pandoc_required": "Pandoc がインストールされていないか利用できません。まず Pandoc をインストールしてください"
+  },
+  "progress": {
+    "converting_file": "変換中: {file}",
+    "completed": "変換が完了しました",
+    "failed_with_error": "変換に失敗しました: {error}",
+    "preparing": "準備中...",
+    "batch_progress": "変換中... ({current}/{total})",
+    "time_remaining": "予想残り時間: {time}",
+    "time_seconds": "{seconds} 秒",
+    "time_minutes": "{minutes} 分",
+    "time_hours": "{hours} 時間 {minutes} 分"
+  },
+  "templates_extended": {
+    "not_found_suffix": "（見つかりません）",
+    "file_not_exist": "ソースファイルが存在しません",
+    "invalid_docx": "ファイルは有効な DOCX 形式ではありません",
+    "added_successfully": "テンプレート '{name}' が正常に追加されました",
+    "copy_failed": "ファイルのコピーに失敗しました: {error}",
+    "does_not_exist": "テンプレートファイルが存在しません",
+    "must_be_docx": "テンプレートファイルは DOCX 形式である必要があります",
+    "validation_passed": "テンプレートファイルは有効です",
+    "test_failed": "テンプレートテストに失敗しました: {error}",
+    "validation_error": "テンプレートの検証中にエラーが発生しました: {error}",
+    "readme_title": "カスタムテンプレート使用ガイド",
+    "readme_content": "# カスタムテンプレート使用ガイド\n\nMarkdown から DOCX コンバーターへようこそ！\n\n## テンプレートについて\n\nこのソフトウェアは変換テンプレートとして DOCX ファイルを使用し、変換されたドキュメントが一貫したフォーマットとスタイルを持つことを保証します。\n\n## カスタムテンプレートの追加方法\n\n1. **テンプレートファイルの準備**\n   - .docx ファイルを作成または取得\n   - ファイルに希望するスタイル、フォント、ページレイアウトなどが含まれていることを確認\n   - テンプレートファイルには実際のコンテンツは不要で、スタイル設定のみ必要\n\n2. **テンプレートの追加**\n   - .docx ファイルをこのディレクトリにコピー\n   - またはアプリケーションの「参照...」ボタンを使用してテンプレートファイルを選択\n   - ソフトウェアは利用可能なテンプレートを自動的に検出して表示\n\n3. **テンプレートの使用**\n   - 変換インターフェースのテンプレートドロップダウンリストからテンプレートを選択\n   - 変換を開始すると、生成された DOCX ファイルは選択されたテンプレートのスタイルを使用\n\n## テンプレートファイルの要件\n\n- **ファイル形式**: .docx 形式である必要があります（Microsoft Word 2007 以降）\n- **ファイル状態**: ファイルは完全で破損していない必要があります\n- **スタイル設定**: 見出し、本文、リストなどのスタイルを事前に設定することをお勧めします\n\n## トラブルシューティング\n\nテンプレートが正常に使用できない場合は、以下を確認してください：\n- ファイルが有効な .docx 形式かどうか\n- ファイルが完全で破損していないかどうか\n- ファイルの権限が正しいかどうか\n\n## 技術的な注意事項\n\nこのソフトウェアはドキュメント変換に Pandoc を使用し、テンプレートファイルで出力ドキュメントのフォーマットとスタイルを制御します。Pandoc テンプレートの詳細については、Pandoc の公式ドキュメントを参照してください。\n\n---\n\nご質問がある場合は、アプリケーションのヘルプドキュメントを参照するか、技術サポートにお問い合わせください。"
+  },
+  "pandoc": {
+    "installation": {
+      "guide_intro": "Pandoc はこのソフトウェアに必要なドキュメント変換ツールです。完全な機能を使用するには、Pandoc をインストールしてください。",
+      "version_requirement": "最適な互換性のため、Pandoc 2.11 以上を推奨します。",
+      "macos_title": "macOS インストール方法:",
+      "macos_homebrew": "Homebrew を使用（推奨）:",
+      "macos_homebrew_command": "brew install pandoc",
+      "macos_download": "または公式サイトからインストーラーをダウンロード:",
+      "windows_title": "Windows インストール方法:",
+      "windows_download": "公式サイトからインストーラーをダウンロード（推奨）:",
+      "windows_chocolatey": "または Chocolatey を使用:",
+      "windows_chocolatey_command": "choco install pandoc",
+      "windows_scoop": "または Scoop を使用:",
+      "windows_scoop_command": "scoop install pandoc",
+      "linux_title": "Linux インストール方法:",
+      "linux_ubuntu": "Ubuntu/Debian システム:",
+      "linux_ubuntu_command": "sudo apt-get install pandoc",
+      "linux_centos": "CentOS/RHEL システム:",
+      "linux_centos_command": "sudo yum install pandoc または sudo dnf install pandoc",
+      "download_url": "公式ダウンロード: https://pandoc.org/installing.html",
+      "after_installation": "インストール後、このアプリケーションを再起動してください。",
+      "compatibility_note": "注意: 古いバージョン（< 2.11）でも動作しますが、一部の高度な機能（引用処理など）は利用できない場合があります。"
+    },
+    "version": {
+      "warning_title": "Pandoc バージョンのお知らせ",
+      "old_version": "お使いの Pandoc バージョン（{version}）は 2.11 より低いです",
+      "limited_features": "一部の高度な機能（引用処理など）が利用できない場合があります",
+      "upgrade_recommendation": "完全な機能のため、最新バージョンへのアップグレードをお勧めします"
+    }
+  },
+  "startup": {
+    "pyside6_missing": "エラー: PySide6 が見つかりません。インストールしてください: pip install PySide6",
+    "import_failed": "エラー: モジュールインポートに失敗しました - {error}",
+    "startup_error": "起動エラー: {error}"
+  }
+}

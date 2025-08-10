@@ -1,0 +1,81 @@
+{
+  "languages": {
+    "zh_CN": {
+      "native_name": "简体中文",
+      "enabled": true
+    },
+    "en_US": {
+      "native_name": "English",
+      "enabled": true
+    },
+    "zh_TW": {
+      "native_name": "繁體中文",
+      "enabled": true
+    },
+    "fr_FR": {
+      "native_name": "Français",
+      "enabled": true
+    },
+    "es_ES": {
+      "native_name": "Español",
+      "enabled": true
+    },
+    "de_DE": {
+      "native_name": "Deutsch",
+      "enabled": true
+    },
+    "pt_PT": {
+      "native_name": "Português",
+      "enabled": true
+    },
+    "ru_RU": {
+      "native_name": "Русский",
+      "enabled": true
+    },
+    "it_IT": {
+      "native_name": "Italiano",
+      "enabled": true
+    },
+    "ja_JP": {
+      "native_name": "日本語",
+      "enabled": true
+    },
+    "ko_KR": {
+      "native_name": "한국어",
+      "enabled": true
+    }
+  },
+  "system_language_mapping": {
+    "zh_CN": "zh_CN",
+    "zh_TW": "zh_TW",
+    "zh_HK": "zh_TW",
+    "zh_SG": "zh_CN",
+    "en_US": "en_US",
+    "en_GB": "en_US",
+    "en": "en_US",
+    "zh": "zh_CN",
+    "fr_FR": "fr_FR",
+    "fr_CA": "fr_FR",
+    "fr": "fr_FR",
+    "es_ES": "es_ES",
+    "es_MX": "es_ES",
+    "es_AR": "es_ES",
+    "es": "es_ES",
+    "de_DE": "de_DE",
+    "de_AT": "de_DE",
+    "de_CH": "de_DE",
+    "de": "de_DE",
+    "pt_PT": "pt_PT",
+    "pt_BR": "pt_PT",
+    "pt": "pt_PT",
+    "ru_RU": "ru_RU",
+    "ru": "ru_RU",
+    "it_IT": "it_IT",
+    "it_CH": "it_IT",
+    "it": "it_IT",
+    "ja_JP": "ja_JP",
+    "ja": "ja_JP",
+    "ko_KR": "ko_KR",
+    "ko": "ko_KR"
+  }
+}

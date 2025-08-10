@@ -1,0 +1,22 @@
+{
+  "templates": {
+    "default_template": "default.docx",
+    "user_templates": []
+  },
+  "output_settings": {
+    "overwrite_files": true,
+    "naming_strategy": "timestamp",
+    "preview_outputs": true,
+    "remove_emoji": true
+  },
+  "ui": {
+    "recursive_scan": true,
+    "window_geometry": "AdnQywADAAD///nSAAAAcf///MkAAAN6///50gAAAI3///zJAAADegAAAAEAAAAACgD///nSAAAAjf///MkAAAN6",
+    "window_state": null,
+    "language": "auto"
+  },
+  "recent": {
+    "directories": [],
+    "templates": []
+  }
+}

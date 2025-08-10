@@ -1,0 +1,8 @@
+# Core GUI framework for Qt-based interface
+PySide6>=6.5.0,<7.0.0
+
+# Emoji processing for professional document formatting
+emoji>=2.2.0,<3.0.0
+
+# Note: Pandoc must be installed separately from https://pandoc.org
+# This application requires Pandoc for document conversion functionality

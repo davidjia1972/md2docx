@@ -1,0 +1,228 @@
+{
+  "app": {
+    "title": "Convertisseur Markdown vers DOCX",
+    "name": "Convertisseur Markdown vers DOCX"
+  },
+  "ui": {
+    "drag_drop": {
+      "text": "Glissez et déposez des fichiers ou dossiers ici",
+      "select_files": "Sélectionner des fichiers",
+      "select_folder": "Sélectionner un dossier"
+    },
+    "buttons": {
+      "start": "Démarrer",
+      "cancel": "Annuler",
+      "browse": "Parcourir...",
+      "ok": "OK",
+      "yes": "Oui",
+      "no": "Non"
+    },
+    "labels": {
+      "files_to_convert": "📋 Fichiers à convertir",
+      "file_stats": "📊 {count} fichiers",
+      "recursive_scan": "Rechercher récursivement les fichiers Markdown dans les sous-dossiers",
+      "conversion_settings": "Paramètres de conversion",
+      "template": "Modèle :",
+      "file_handling": "Gestion des fichiers :",
+      "language": "Langue :"
+    },
+    "options": {
+      "overwrite": "Écraser",
+      "auto_rename": "Renommer automatiquement",
+      "auto_detect_language": "Détection automatique",
+      "remove_emoji": "Supprimer les emojis"
+    },
+    "status": {
+      "pandoc_not_installed": "⚠️ Pandoc n'est pas installé",
+      "pandoc_ready": "✅ {version}",
+      "starting_conversion": "Début de la conversion...",
+      "conversion_completed": "✅ Conversion terminée ! {successful} fichiers convertis avec succès",
+      "conversion_completed_with_failures": "⚠️ Conversion terminée, {successful} réussies, {failed} échouées",
+      "conversion_failed": "❌ Échec de la conversion : {error}"
+    },
+    "tooltips": {
+      "delete_from_list": "Retirer de la liste",
+      "language_load_failed": "Échec du chargement de la langue",
+      "remove_emoji": "Supprimer automatiquement tous les caractères emoji des fichiers Markdown avant la conversion"
+    }
+  },
+  "menu": {
+    "context": {
+      "remove_from_list": "🗑️ Retirer de la liste",
+      "show_in_folder": "📁 Afficher dans le dossier"
+    }
+  },
+  "dialogs": {
+    "pandoc_not_installed": {
+      "title": "Pandoc n'est pas installé",
+      "message": "Pandoc n'a pas été trouvé. Veuillez installer Pandoc avant d'utiliser la fonction de conversion."
+    },
+    "pandoc_version_notice": {
+      "title": "Notice de version Pandoc"
+    },
+    "file_scan_failed": {
+      "title": "Échec de l'analyse des fichiers",
+      "message": "Erreur lors de l'analyse des fichiers : {error}"
+    },
+    "validation_failed": {
+      "title": "Échec de la validation"
+    },
+    "conversion_failed": {
+      "title": "Échec de la conversion",
+      "message": "Impossible de commencer la conversion, elle est peut-être déjà en cours"
+    },
+    "conversion_complete": {
+      "title": "Conversion terminée",
+      "message": "{successful}/{total} fichiers convertis avec succès"
+    },
+    "conversion_complete_with_failures": {
+      "title": "Conversion terminée (avec des échecs)"
+    },
+    "conversion_error": {
+      "title": "Erreur de conversion"
+    },
+    "confirm_close": {
+      "title": "Confirmer la fermeture",
+      "message": "Une conversion est en cours. Êtes-vous sûr de vouloir fermer le programme ?"
+    },
+    "add_template_success": {
+      "title": "Succès"
+    },
+    "add_template_failed": {
+      "title": "Échec de l'ajout du modèle"
+    },
+    "open_folder_error": {
+      "title": "Ouvrir le dossier",
+      "message": "Impossible d'ouvrir le dossier : {error}"
+    },
+    "file_not_exist": {
+      "title": "Le fichier n'existe pas",
+      "message": "Ce fichier n'existe pas ou a été déplacé"
+    },
+    "select_files_first": {
+      "title": "Astuce",
+      "message": "Veuillez d'abord sélectionner les fichiers Markdown à convertir"
+    },
+    "install_pandoc_first": {
+      "title": "Pandoc n'est pas installé",
+      "message": "Veuillez d'abord installer Pandoc"
+    },
+    "missing_components": {
+      "title": "Composants requis manquants",
+      "message_prefix": "Composants requis manquants:",
+      "message_suffix": "Veuillez installer les composants manquants et redémarrer le programme."
+    },
+    "startup_error": {
+      "title": "Erreur de démarrage",
+      "message": "Une erreur s'est produite au démarrage:\n\n{error}\n\nVeuillez vérifier le fichier journal pour plus de détails."
+    },
+    "conversion_results": {
+      "summary": "Résultats de la conversion:\n\nRéussi: {successful} fichiers\nÉchec: {failed} fichiers",
+      "failed_files_header": "Fichiers en échec:",
+      "more_files": "... et {count} autres fichiers"
+    }
+  },
+  "templates": {
+    "no_templates": "Aucun modèle disponible",
+    "error_loading": "Erreur lors du chargement des modèles"
+  },
+  "file_operations": {
+    "select_markdown_files": "Sélectionner des fichiers Markdown",
+    "markdown_filter": "Fichiers Markdown (*.md *.markdown);;Tous les fichiers (*.*)",
+    "select_directory": "Sélectionner un répertoire",
+    "select_template_file": "Sélectionner un fichier de modèle DOCX",
+    "word_documents_filter": "Documents Word (*.docx);;Tous les fichiers (*.*)"
+  },
+  "messages": {
+    "removed_from_list": "Fichier retiré de la liste : {filename}",
+    "file_not_in_list": "Fichier non présent dans la liste : {filepath}"
+  },
+  "context_menu": {
+    "remove_from_list": "🗑️ Retirer de la liste",
+    "show_in_folder": "📁 Afficher dans le dossier"
+  },
+  "file_errors": {
+    "open_folder_failed": "Impossible d'ouvrir le dossier : {error}",
+    "file_not_exist": "Ce fichier n'existe pas ou a été déplacé"
+  },
+  "validation": {
+    "pandoc_not_available": "Pandoc n'est pas installé ou disponible",
+    "pandoc_not_installed": "Pandoc n'est pas installé",
+    "no_files_selected": "Aucun fichier Markdown sélectionné",
+    "no_valid_files": "Aucun fichier Markdown valide trouvé",
+    "success": "Validation réussie, {count} fichiers valides trouvés",
+    "template_not_exist": "Le fichier de modèle n'existe pas : {path}",
+    "template_invalid": "Fichier de modèle invalide : {error}",
+    "file_not_exist": "Le fichier d'entrée n'existe pas : {path}"
+  },
+  "conversion": {
+    "success": "Conversion réussie : {input} -> {output}",
+    "failed": "Échec de la conversion : {error}",
+    "timeout": "Délai d'attente de la conversion dépassé (plus de 5 minutes)",
+    "no_output": "Conversion terminée mais aucun fichier de sortie généré",
+    "pandoc_error": "Erreur lors de l'exécution de Pandoc : {error}",
+    "system_error": "Erreur système : {error}",
+    "unknown_error": "Erreur inconnue lors de la conversion : {error}",
+    "pandoc_required": "Pandoc n'est pas installé ou disponible, veuillez d'abord installer Pandoc"
+  },
+  "progress": {
+    "converting_file": "Conversion : {file}",
+    "completed": "Conversion terminée",
+    "failed_with_error": "Échec de la conversion : {error}",
+    "preparing": "Préparation...",
+    "batch_progress": "Conversion... ({current}/{total})",
+    "time_remaining": "Temps restant estimé : {time}",
+    "time_seconds": "{seconds} secondes",
+    "time_minutes": "{minutes} minutes",
+    "time_hours": "{hours} heures {minutes} minutes"
+  },
+  "templates_extended": {
+    "not_found_suffix": " (non trouvé)",
+    "file_not_exist": "Le fichier source n'existe pas",
+    "invalid_docx": "Le fichier n'est pas au format DOCX valide",
+    "added_successfully": "Modèle '{name}' ajouté avec succès",
+    "copy_failed": "Échec de la copie du fichier : {error}",
+    "does_not_exist": "Le fichier de modèle n'existe pas",
+    "must_be_docx": "Le fichier de modèle doit être au format DOCX",
+    "validation_passed": "Le fichier de modèle est valide",
+    "test_failed": "Test du modèle échoué : {error}",
+    "validation_error": "Erreur lors de la validation du modèle : {error}",
+    "readme_title": "Guide d'utilisation des modèles personnalisés",
+    "readme_content": "# Guide d'utilisation des modèles personnalisés\n\nBienvenue dans le Convertisseur Markdown vers DOCX !\n\n## À propos des modèles\n\nCe logiciel utilise des fichiers DOCX comme modèles de conversion pour garantir que les documents convertis ont un formatage et un style uniformes.\n\n## Comment ajouter des modèles personnalisés\n\n1. **Préparer le fichier de modèle**\n   - Créer ou obtenir un fichier .docx\n   - S'assurer que le fichier contient les styles, polices, mise en page souhaités, etc.\n   - Le fichier de modèle n'a pas besoin de contenu réel, seulement des paramètres de style\n\n2. **Ajouter le modèle**\n   - Copier le fichier .docx dans ce répertoire\n   - Ou utiliser le bouton \"Parcourir...\" dans l'application pour sélectionner le fichier de modèle\n   - Le logiciel détectera et affichera automatiquement les modèles disponibles\n\n3. **Utiliser le modèle**\n   - Sélectionner votre modèle dans la liste déroulante des modèles de l'interface de conversion\n   - Commencer la conversion, les fichiers DOCX générés utiliseront les styles du modèle sélectionné\n\n## Exigences du fichier de modèle\n\n- **Format de fichier** : Doit être au format .docx (Microsoft Word 2007 et versions ultérieures)\n- **État du fichier** : Le fichier doit être complet et non corrompu\n- **Paramètres de style** : Il est recommandé de préconfigurer les styles de titre, texte principal, liste, etc.\n\n## Dépannage\n\nSi les modèles ne peuvent pas être utilisés normalement, veuillez vérifier :\n- Si le fichier est au format .docx valide\n- Si le fichier est complet et non corrompu\n- Si les permissions du fichier sont correctes\n\n## Notes techniques\n\nCe logiciel utilise Pandoc pour la conversion de documents, les fichiers de modèle contrôlant le formatage et le style des documents de sortie. Pour plus d'informations sur les modèles Pandoc, veuillez consulter la documentation officielle de Pandoc.\n\n---\n\nSi vous avez des questions, veuillez consulter la documentation d'aide de l'application ou contacter le support technique."
+  },
+  "pandoc": {
+    "installation": {
+      "guide_intro": "Pandoc est un outil de conversion de documents requis pour ce logiciel. Pour utiliser toutes les fonctionnalités, veuillez installer Pandoc.",
+      "version_requirement": "Pandoc 2.11 ou supérieur est recommandé pour une compatibilité optimale.",
+      "macos_title": "Méthodes d'installation macOS :",
+      "macos_homebrew": "Utilisation de Homebrew (recommandé) :",
+      "macos_homebrew_command": "brew install pandoc",
+      "macos_download": "Ou télécharger l'installateur depuis le site officiel :",
+      "windows_title": "Méthodes d'installation Windows :",
+      "windows_download": "Télécharger l'installateur depuis le site officiel (recommandé) :",
+      "windows_chocolatey": "Ou utiliser Chocolatey :",
+      "windows_chocolatey_command": "choco install pandoc",
+      "windows_scoop": "Ou utiliser Scoop :",
+      "windows_scoop_command": "scoop install pandoc",
+      "linux_title": "Méthodes d'installation Linux :",
+      "linux_ubuntu": "Systèmes Ubuntu/Debian :",
+      "linux_ubuntu_command": "sudo apt-get install pandoc",
+      "linux_centos": "Systèmes CentOS/RHEL :",
+      "linux_centos_command": "sudo yum install pandoc ou sudo dnf install pandoc",
+      "download_url": "Téléchargement officiel : https://pandoc.org/installing.html",
+      "after_installation": "Après l'installation, veuillez redémarrer cette application.",
+      "compatibility_note": "Note : Les versions plus anciennes (< 2.11) fonctionneront, mais certaines fonctionnalités avancées (comme le traitement des citations) pourraient ne pas être disponibles."
+    },
+    "version": {
+      "warning_title": "Rappel de version Pandoc",
+      "old_version": "Votre version de Pandoc ({version}) est inférieure à 2.11",
+      "limited_features": "Certaines fonctionnalités avancées (comme le traitement des citations) pourraient ne pas être disponibles",
+      "upgrade_recommendation": "La mise à niveau vers la dernière version est recommandée pour une fonctionnalité complète"
+    }
+  },
+  "startup": {
+    "pyside6_missing": "Erreur : PySide6 introuvable. Veuillez installer : pip install PySide6",
+    "import_failed": "Erreur : Échec de l'importation du module - {error}",
+    "startup_error": "Erreur de démarrage : {error}"
+  }
+}

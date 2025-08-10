@@ -1,0 +1,228 @@
+{
+  "app": {
+    "title": "Convertitore Markdown in DOCX",
+    "name": "Convertitore Markdown in DOCX"
+  },
+  "ui": {
+    "drag_drop": {
+      "text": "Trascina e rilascia file o cartelle qui",
+      "select_files": "Seleziona file",
+      "select_folder": "Seleziona cartella"
+    },
+    "buttons": {
+      "start": "Inizia",
+      "cancel": "Annulla",
+      "browse": "Sfoglia...",
+      "ok": "OK",
+      "yes": "Sì",
+      "no": "No"
+    },
+    "labels": {
+      "files_to_convert": "📋 File da convertire",
+      "file_stats": "📊 {count} file",
+      "recursive_scan": "Ricerca ricorsiva dei file Markdown nelle sottocartelle",
+      "conversion_settings": "Impostazioni di conversione",
+      "template": "Modello:",
+      "file_handling": "Gestione file:",
+      "language": "Lingua:"
+    },
+    "options": {
+      "overwrite": "Sovrascrivi",
+      "auto_rename": "Rinomina automaticamente",
+      "auto_detect_language": "Rilevamento automatico",
+      "remove_emoji": "Rimuovi caratteri emoji"
+    },
+    "status": {
+      "pandoc_not_installed": "⚠️ Pandoc non è installato",
+      "pandoc_ready": "✅ {version}",
+      "starting_conversion": "Avvio conversione...",
+      "conversion_completed": "✅ Conversione completata! {successful} file convertiti con successo",
+      "conversion_completed_with_failures": "⚠️ Conversione completata, {successful} riusciti, {failed} falliti",
+      "conversion_failed": "❌ Conversione fallita: {error}"
+    },
+    "tooltips": {
+      "delete_from_list": "Rimuovi dalla lista",
+      "language_load_failed": "Errore caricamento lingua",
+      "remove_emoji": "Rimuovere automaticamente tutti i caratteri emoji dai file markdown prima della conversione"
+    }
+  },
+  "menu": {
+    "context": {
+      "remove_from_list": "🗑️ Rimuovi dalla lista",
+      "show_in_folder": "📁 Mostra nella cartella"
+    }
+  },
+  "dialogs": {
+    "pandoc_not_installed": {
+      "title": "Pandoc non è installato",
+      "message": "Pandoc non è stato trovato. Per favore installa Pandoc prima di usare la funzione di conversione."
+    },
+    "pandoc_version_notice": {
+      "title": "Avviso versione Pandoc"
+    },
+    "file_scan_failed": {
+      "title": "Scansione file fallita",
+      "message": "Errore durante la scansione dei file: {error}"
+    },
+    "validation_failed": {
+      "title": "Validazione fallita"
+    },
+    "conversion_failed": {
+      "title": "Conversione fallita",
+      "message": "Impossibile avviare la conversione, forse è già in esecuzione"
+    },
+    "conversion_complete": {
+      "title": "Conversione completata",
+      "message": "{successful}/{total} file convertiti con successo"
+    },
+    "conversion_complete_with_failures": {
+      "title": "Conversione completata (con errori)"
+    },
+    "conversion_error": {
+      "title": "Errore di conversione"
+    },
+    "confirm_close": {
+      "title": "Conferma chiusura",
+      "message": "È in corso una conversione. Sei sicuro di voler chiudere il programma?"
+    },
+    "add_template_success": {
+      "title": "Successo"
+    },
+    "add_template_failed": {
+      "title": "Aggiunta modello fallita"
+    },
+    "open_folder_error": {
+      "title": "Apri cartella",
+      "message": "Impossibile aprire la cartella: {error}"
+    },
+    "file_not_exist": {
+      "title": "Il file non esiste",
+      "message": "Questo file non esiste o è stato spostato"
+    },
+    "select_files_first": {
+      "title": "Suggerimento",
+      "message": "Per favore seleziona prima i file Markdown da convertire"
+    },
+    "install_pandoc_first": {
+      "title": "Pandoc non è installato",
+      "message": "Per favore installa prima Pandoc"
+    },
+    "missing_components": {
+      "title": "Componenti richiesti mancanti",
+      "message_prefix": "Componenti richiesti mancanti:",
+      "message_suffix": "Installa i componenti mancanti e riavvia il programma."
+    },
+    "startup_error": {
+      "title": "Errore di avvio",
+      "message": "Si è verificato un errore durante l'avvio:\n\n{error}\n\nControlla il file di registro per i dettagli."
+    },
+    "conversion_results": {
+      "summary": "Risultati della conversione:\n\nRiusciti: {successful} file\nFalliti: {failed} file",
+      "failed_files_header": "File falliti:",
+      "more_files": "... e altri {count} file"
+    }
+  },
+  "templates": {
+    "no_templates": "Nessun modello disponibile",
+    "error_loading": "Errore nel caricamento dei modelli"
+  },
+  "file_operations": {
+    "select_markdown_files": "Seleziona file Markdown",
+    "markdown_filter": "File Markdown (*.md *.markdown);;Tutti i file (*.*)",
+    "select_directory": "Seleziona directory",
+    "select_template_file": "Seleziona file modello DOCX",
+    "word_documents_filter": "Documenti Word (*.docx);;Tutti i file (*.*)"
+  },
+  "messages": {
+    "removed_from_list": "File rimosso dalla lista: {filename}",
+    "file_not_in_list": "File non presente nella lista: {filepath}"
+  },
+  "context_menu": {
+    "remove_from_list": "🗑️ Rimuovi dalla lista",
+    "show_in_folder": "📁 Mostra nella cartella"
+  },
+  "file_errors": {
+    "open_folder_failed": "Impossibile aprire la cartella: {error}",
+    "file_not_exist": "Questo file non esiste o è stato spostato"
+  },
+  "validation": {
+    "pandoc_not_available": "Pandoc non è installato o non disponibile",
+    "pandoc_not_installed": "Pandoc non è installato",
+    "no_files_selected": "Nessun file Markdown selezionato",
+    "no_valid_files": "Nessun file Markdown valido trovato",
+    "success": "Validazione superata, trovati {count} file validi",
+    "template_not_exist": "Il file template non esiste: {path}",
+    "template_invalid": "File template non valido: {error}",
+    "file_not_exist": "Il file di input non esiste: {path}"
+  },
+  "conversion": {
+    "success": "Conversione riuscita: {input} -> {output}",
+    "failed": "Conversione fallita: {error}",
+    "timeout": "Conversione scaduta (superati 5 minuti)",
+    "no_output": "Conversione completata ma nessun file di output generato",
+    "pandoc_error": "Errore nell'esecuzione di Pandoc: {error}",
+    "system_error": "Errore di sistema: {error}",
+    "unknown_error": "Errore sconosciuto durante la conversione: {error}",
+    "pandoc_required": "Pandoc non è installato o non disponibile, si prega di installare prima Pandoc"
+  },
+  "progress": {
+    "converting_file": "Conversione: {file}",
+    "completed": "Conversione completata",
+    "failed_with_error": "Conversione fallita: {error}",
+    "preparing": "Preparazione...",
+    "batch_progress": "Conversione... ({current}/{total})",
+    "time_remaining": "Tempo rimanente stimato: {time}",
+    "time_seconds": "{seconds} secondi",
+    "time_minutes": "{minutes} minuti",
+    "time_hours": "{hours} ore {minutes} minuti"
+  },
+  "templates_extended": {
+    "not_found_suffix": " (non trovato)",
+    "file_not_exist": "Il file sorgente non esiste",
+    "invalid_docx": "Il file non è in formato DOCX valido",
+    "added_successfully": "Template '{name}' aggiunto con successo",
+    "copy_failed": "Fallimento nella copia del file: {error}",
+    "does_not_exist": "Il file template non esiste",
+    "must_be_docx": "Il file template deve essere in formato DOCX",
+    "validation_passed": "Il file template è valido",
+    "test_failed": "Test del template fallito: {error}",
+    "validation_error": "Errore durante la validazione del template: {error}",
+    "readme_title": "Guida all'uso dei template personalizzati",
+    "readme_content": "# Guida all'uso dei template personalizzati\n\nBenvenuto nel Convertitore Markdown in DOCX!\n\n## Informazioni sui template\n\nQuesto software utilizza file DOCX come template di conversione per garantire che i documenti convertiti abbiano formattazione e stili coerenti.\n\n## Come aggiungere template personalizzati\n\n1. **Preparare il file template**\n   - Creare o ottenere un file .docx\n   - Assicurarsi che il file contenga gli stili, i font, il layout di pagina desiderati, ecc.\n   - Il file template non ha bisogno di contenuto effettivo, solo impostazioni di stile\n\n2. **Aggiungere il template**\n   - Copiare il file .docx in questa directory\n   - Oppure utilizzare il pulsante \"Sfoglia...\" nell'applicazione per selezionare il file template\n   - Il software rileverà automaticamente e visualizzerà i template disponibili\n\n3. **Utilizzare il template**\n   - Selezionare il template dall'elenco a discesa dei template nell'interfaccia di conversione\n   - Avviare la conversione, e i file DOCX generati utilizzeranno gli stili del template selezionato\n\n## Requisiti del file template\n\n- **Formato del file**: Deve essere in formato .docx (Microsoft Word 2007 e successivi)\n- **Stato del file**: Il file deve essere completo e non corrotto\n- **Impostazioni di stile**: Raccomandato pre-configurare stili di intestazione, testo del corpo, elenchi, ecc.\n\n## Risoluzione problemi\n\nSe i template non possono essere utilizzati normalmente, controllare:\n- Se il file è in formato .docx valido\n- Se il file è completo e non corrotto\n- Se i permessi del file sono corretti\n\n## Note tecniche\n\nQuesto software utilizza Pandoc per la conversione dei documenti, con file template che controllano la formattazione e lo stile dei documenti di output. Per maggiori informazioni sui template Pandoc, consultare la documentazione ufficiale di Pandoc.\n\n---\n\nSe hai domande, consulta la documentazione di aiuto dell'applicazione o contatta il supporto tecnico."
+  },
+  "pandoc": {
+    "installation": {
+      "guide_intro": "Pandoc è uno strumento di conversione documenti necessario per questo software. Per utilizzare la funzionalità completa, si prega di installare Pandoc.",
+      "version_requirement": "Pandoc 2.11 o superiore è raccomandato per compatibilità ottimale.",
+      "macos_title": "Metodi di installazione macOS:",
+      "macos_homebrew": "Utilizzando Homebrew (raccomandato):",
+      "macos_homebrew_command": "brew install pandoc",
+      "macos_download": "Oppure scaricare l'installer dal sito ufficiale:",
+      "windows_title": "Metodi di installazione Windows:",
+      "windows_download": "Scaricare l'installer dal sito ufficiale (raccomandato):",
+      "windows_chocolatey": "Oppure utilizzare Chocolatey:",
+      "windows_chocolatey_command": "choco install pandoc",
+      "windows_scoop": "Oppure utilizzare Scoop:",
+      "windows_scoop_command": "scoop install pandoc",
+      "linux_title": "Metodi di installazione Linux:",
+      "linux_ubuntu": "Sistemi Ubuntu/Debian:",
+      "linux_ubuntu_command": "sudo apt-get install pandoc",
+      "linux_centos": "Sistemi CentOS/RHEL:",
+      "linux_centos_command": "sudo yum install pandoc o sudo dnf install pandoc",
+      "download_url": "Download ufficiale: https://pandoc.org/installing.html",
+      "after_installation": "Dopo l'installazione, si prega di riavviare questa applicazione.",
+      "compatibility_note": "Nota: Versioni più vecchie (< 2.11) funzioneranno, ma alcune funzionalità avanzate (come l'elaborazione delle citazioni) potrebbero non essere disponibili."
+    },
+    "version": {
+      "warning_title": "Promemoria versione Pandoc",
+      "old_version": "La tua versione di Pandoc ({version}) è inferiore alla 2.11",
+      "limited_features": "Alcune funzionalità avanzate (come l'elaborazione delle citazioni) potrebbero non essere disponibili",
+      "upgrade_recommendation": "L'aggiornamento all'ultima versione è raccomandato per la funzionalità completa"
+    }
+  },
+  "startup": {
+    "pyside6_missing": "Errore: PySide6 non trovato. Si prega di installare: pip install PySide6",
+    "import_failed": "Errore: Importazione modulo fallita - {error}",
+    "startup_error": "Errore di avvio: {error}"
+  }
+}

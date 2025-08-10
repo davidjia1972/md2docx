@@ -1,0 +1,228 @@
+{
+  "app": {
+    "title": "Markdown 轉 DOCX 轉換器",
+    "name": "Markdown 到 DOCX 轉換器"
+  },
+  "ui": {
+    "drag_drop": {
+      "text": "拖放檔案或資料夾到這裡",
+      "select_files": "選擇檔案",
+      "select_folder": "選擇資料夾"
+    },
+    "buttons": {
+      "start": "開始",
+      "cancel": "取消",
+      "browse": "瀏覽...",
+      "ok": "確定",
+      "yes": "是",
+      "no": "否"
+    },
+    "labels": {
+      "files_to_convert": "📋 待轉換的檔案",
+      "file_stats": "📊 {count} 個檔案",
+      "recursive_scan": "遞歸搜尋子目錄中的 Markdown 檔案",
+      "conversion_settings": "轉換設定",
+      "template": "範本:",
+      "file_handling": "檔案處理:",
+      "language": "語言:"
+    },
+    "options": {
+      "overwrite": "覆寫",
+      "auto_rename": "自動重新命名",
+      "auto_detect_language": "自動偵測",
+      "remove_emoji": "清除表情符號"
+    },
+    "status": {
+      "pandoc_not_installed": "⚠️ Pandoc 未安裝",
+      "pandoc_ready": "✅ {version}",
+      "starting_conversion": "正在開始轉換...",
+      "conversion_completed": "✅ 轉換完成！成功轉換了 {successful} 個檔案",
+      "conversion_completed_with_failures": "⚠️ 轉換完成，{successful} 個成功，{failed} 個失敗",
+      "conversion_failed": "❌ 轉換失敗：{error}"
+    },
+    "tooltips": {
+      "delete_from_list": "從清單中移除",
+      "language_load_failed": "語言載入失敗",
+      "remove_emoji": "轉換前自動清除 Markdown 檔案中的表情符號字元"
+    }
+  },
+  "menu": {
+    "context": {
+      "remove_from_list": "🗑️ 從清單中移除",
+      "show_in_folder": "📁 在資料夾中顯示"
+    }
+  },
+  "dialogs": {
+    "pandoc_not_installed": {
+      "title": "Pandoc 未安裝",
+      "message": "未找到 Pandoc。請先安裝 Pandoc 才能使用轉換功能。"
+    },
+    "pandoc_version_notice": {
+      "title": "Pandoc 版本提示"
+    },
+    "file_scan_failed": {
+      "title": "檔案掃描失敗",
+      "message": "掃描檔案時發生錯誤：{error}"
+    },
+    "validation_failed": {
+      "title": "驗證失敗"
+    },
+    "conversion_failed": {
+      "title": "轉換失敗",
+      "message": "無法開始轉換，可能已經在執行中"
+    },
+    "conversion_complete": {
+      "title": "轉換完成",
+      "message": "成功轉換了 {successful}/{total} 個檔案"
+    },
+    "conversion_complete_with_failures": {
+      "title": "轉換完成（有失敗）"
+    },
+    "conversion_error": {
+      "title": "轉換錯誤"
+    },
+    "confirm_close": {
+      "title": "確認關閉",
+      "message": "轉換正在進行中。您確定要關閉程式嗎？"
+    },
+    "add_template_success": {
+      "title": "成功"
+    },
+    "add_template_failed": {
+      "title": "新增範本失敗"
+    },
+    "open_folder_error": {
+      "title": "開啟資料夾",
+      "message": "無法開啟資料夾：{error}"
+    },
+    "file_not_exist": {
+      "title": "檔案不存在",
+      "message": "該檔案不存在或已被移動"
+    },
+    "select_files_first": {
+      "title": "提示",
+      "message": "請先選擇要轉換的 Markdown 檔案"
+    },
+    "install_pandoc_first": {
+      "title": "Pandoc 未安裝",
+      "message": "請先安裝 Pandoc"
+    },
+    "missing_components": {
+      "title": "缺少必需的元件",
+      "message_prefix": "缺少必需的元件:",
+      "message_suffix": "請安裝缺少的元件並重新啟動程式。"
+    },
+    "startup_error": {
+      "title": "啟動錯誤",
+      "message": "啟動過程中發生錯誤:\n\n{error}\n\n請檢查日誌檔案以獲取詳細資訊。"
+    },
+    "conversion_results": {
+      "summary": "轉換結果:\n\n成功: {successful} 個檔案\n失敗: {failed} 個檔案",
+      "failed_files_header": "失敗的檔案:",
+      "more_files": "... 還有 {count} 個檔案"
+    }
+  },
+  "templates": {
+    "no_templates": "沒有可用的範本",
+    "error_loading": "載入範本時出錯"
+  },
+  "file_operations": {
+    "select_markdown_files": "選擇 Markdown 檔案",
+    "markdown_filter": "Markdown 檔案 (*.md *.markdown);;所有檔案 (*.*)",
+    "select_directory": "選擇目錄",
+    "select_template_file": "選擇 DOCX 範本檔案",
+    "word_documents_filter": "Word 文件 (*.docx);;所有檔案 (*.*)"
+  },
+  "messages": {
+    "removed_from_list": "已從清單中移除檔案：{filename}",
+    "file_not_in_list": "檔案不在清單中：{filepath}"
+  },
+  "context_menu": {
+    "remove_from_list": "🗑️ 從清單中移除",
+    "show_in_folder": "📁 在資料夾中顯示"
+  },
+  "file_errors": {
+    "open_folder_failed": "無法開啟資料夾：{error}",
+    "file_not_exist": "該檔案不存在或已被移動"
+  },
+  "validation": {
+    "pandoc_not_available": "Pandoc 未安裝或不可用",
+    "pandoc_not_installed": "Pandoc 未安裝",
+    "no_files_selected": "未選擇 Markdown 檔案",
+    "no_valid_files": "未找到有效的 Markdown 檔案",
+    "success": "驗證通過，找到 {count} 個有效檔案",
+    "template_not_exist": "範本檔案不存在：{path}",
+    "template_invalid": "無效的範本檔案：{error}",
+    "file_not_exist": "輸入檔案不存在：{path}"
+  },
+  "conversion": {
+    "success": "轉換成功：{input} -> {output}",
+    "failed": "轉換失敗：{error}",
+    "timeout": "轉換逾時（超過5分鐘）",
+    "no_output": "轉換完成但未產生輸出檔案",
+    "pandoc_error": "執行 Pandoc 時出錯：{error}",
+    "system_error": "系統錯誤：{error}",
+    "unknown_error": "轉換過程中出現未知錯誤：{error}",
+    "pandoc_required": "Pandoc 未安裝或不可用，請先安裝 Pandoc"
+  },
+  "progress": {
+    "converting_file": "正在轉換：{file}",
+    "completed": "轉換完成",
+    "failed_with_error": "轉換失敗：{error}",
+    "preparing": "準備中...",
+    "batch_progress": "轉換中... ({current}/{total})",
+    "time_remaining": "預計剩餘時間：{time}",
+    "time_seconds": "{seconds} 秒",
+    "time_minutes": "{minutes} 分鐘",
+    "time_hours": "{hours} 小時 {minutes} 分鐘"
+  },
+  "templates_extended": {
+    "not_found_suffix": "（未找到）",
+    "file_not_exist": "來源檔案不存在",
+    "invalid_docx": "檔案不是有效的 DOCX 格式",
+    "added_successfully": "範本 '{name}' 新增成功",
+    "copy_failed": "複製檔案失敗：{error}",
+    "does_not_exist": "範本檔案不存在",
+    "must_be_docx": "範本檔案必須是 DOCX 格式",
+    "validation_passed": "範本檔案有效",
+    "test_failed": "範本測試失敗：{error}",
+    "validation_error": "範本驗證過程中出錯：{error}",
+    "readme_title": "自訂範本使用指南",
+    "readme_content": "# 自訂範本使用指南\n\n歡迎使用 Markdown 到 DOCX 轉換器！\n\n## 關於範本\n\n本軟體使用 DOCX 檔案作為轉換範本，以確保轉換後的文件具有統一的格式和樣式。\n\n## 如何新增自訂範本\n\n1. **準備範本檔案**\n   - 建立或取得一個 .docx 檔案\n   - 確保檔案包含您希望的樣式、字型、頁面配置等\n   - 範本檔案不需要包含實際內容，只需要樣式設定\n\n2. **新增範本**\n   - 將 .docx 檔案複製到此目錄\n   - 或透過應用程式的「瀏覽...」按鈕選擇範本檔案\n   - 軟體會自動偵測並顯示可用的範本\n\n3. **使用範本**\n   - 在轉換介面的範本下拉選單中選擇您的範本\n   - 開始轉換，產生的 DOCX 檔案將使用選定的範本樣式\n\n## 範本檔案需求\n\n- **檔案格式**：必須是 .docx 格式（Microsoft Word 2007 及之後版本）\n- **檔案狀態**：檔案必須完整且未損壞\n- **樣式設定**：建議預先設定好標題、內文、清單等樣式\n\n## 故障排除\n\n如果範本無法正常使用，請檢查：\n- 檔案是否為有效的 .docx 格式\n- 檔案是否完整且未損壞\n- 檔案權限是否正確\n\n## 技術說明\n\n本軟體使用 Pandoc 進行文件轉換，範本檔案用於控制輸出文件的格式和樣式。更多關於 Pandoc 範本的資訊，請參考 Pandoc 官方文件。\n\n---\n\n如有問題，請參考應用程式的說明文件或聯絡技術支援。"
+  },
+  "pandoc": {
+    "installation": {
+      "guide_intro": "Pandoc 是本軟體必需的文件轉換工具。為了使用完整功能，請安裝 Pandoc。",
+      "version_requirement": "建議安裝 Pandoc 2.11 或更高版本以獲得最佳相容性。",
+      "macos_title": "macOS 安裝方法：",
+      "macos_homebrew": "使用 Homebrew（推薦）：",
+      "macos_homebrew_command": "brew install pandoc",
+      "macos_download": "或從官網下載安裝包：",
+      "windows_title": "Windows 安裝方法：",
+      "windows_download": "從官網下載安裝包（推薦）：",
+      "windows_chocolatey": "或使用 Chocolatey：",
+      "windows_chocolatey_command": "choco install pandoc",
+      "windows_scoop": "或使用 Scoop：",
+      "windows_scoop_command": "scoop install pandoc",
+      "linux_title": "Linux 安裝方法：",
+      "linux_ubuntu": "Ubuntu/Debian 系統：",
+      "linux_ubuntu_command": "sudo apt-get install pandoc",
+      "linux_centos": "CentOS/RHEL 系統：",
+      "linux_centos_command": "sudo yum install pandoc 或 sudo dnf install pandoc",
+      "download_url": "官方下載地址：https://pandoc.org/installing.html",
+      "after_installation": "安裝完成後，請重新啟動本應用程式。",
+      "compatibility_note": "注意：較舊的版本（< 2.11）可以工作，但某些進階功能（如引用處理）可能不可用。"
+    },
+    "version": {
+      "warning_title": "Pandoc 版本提醒",
+      "old_version": "您的 Pandoc 版本（{version}）低於 2.11",
+      "limited_features": "某些進階功能（如引用處理）可能不可用",
+      "upgrade_recommendation": "建議升級到最新版本以獲得完整功能"
+    }
+  },
+  "startup": {
+    "pyside6_missing": "錯誤：未找到 PySide6。請安裝：pip install PySide6",
+    "import_failed": "錯誤：模組匯入失敗 - {error}",
+    "startup_error": "啟動錯誤：{error}"
+  }
+}
