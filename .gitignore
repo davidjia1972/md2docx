@@ -48,7 +48,7 @@ temp/
 *.temp
 
 # Private Development Documentation
-CLAUDE.md
+
 
 # User Data
 templates/user/*.docx
