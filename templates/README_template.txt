@@ -2,7 +2,7 @@
         NOTE: Default template file needed
         
         Please manually create a default template file:
-        /Users/david/Private/Documents/新项目/文档转换/templates/default.docx
+        templates/default.docx
         
         You can use Microsoft Word, LibreOffice Writer or other compatible software to create a new document.
         Set up your desired formatting:
