@@ -19,9 +19,24 @@ BUILD_DIR="$PACKAGING_DIR/build"
 
 # Load version and build utilities
 VERSION=$(cat "$PROJECT_ROOT/VERSION")
+
+# Detect architecture
+if [[ -n "$BUILD_ARCH" ]]; then
+    ARCH="$BUILD_ARCH"
+else
+    ARCH=$(uname -m)
+    # Normalize architecture names
+    if [[ "$ARCH" == "arm64" ]]; then
+        ARCH="arm64"
+    else
+        ARCH="x86_64"
+    fi
+fi
+
 echo "Project root: $PROJECT_ROOT"
 echo "Packaging dir: $PACKAGING_DIR"
 echo "Version: $VERSION"
+echo "Target architecture: $ARCH"
 
 # Check dependencies
 echo -e "${YELLOW}Checking dependencies...${NC}"
@@ -80,7 +95,7 @@ if [ -d "$APP_PATH" ]; then
     fi
     
     # Create DMG if needed
-    DMG_NAME="md2docx-v${VERSION}-macOS.dmg"
+    DMG_NAME="md2docx-v${VERSION}-macOS-${ARCH}.dmg"
     if command -v create-dmg &> /dev/null; then
         echo -e "${YELLOW}Creating DMG...${NC}"
         create-dmg --volname "Markdown to Word v${VERSION}" \
@@ -131,6 +146,7 @@ if releases_dir:
     echo -e "${GREEN}🎉 macOS build completed successfully!${NC}"
     echo ""
     echo "Build artifacts:"
+    echo "  Architecture: $ARCH"
     echo "  App bundle: $APP_PATH"
     [ -f "$DIST_DIR/$DMG_NAME" ] && echo "  DMG installer: $DIST_DIR/$DMG_NAME"
     echo "  Release files: releases/v${VERSION}/"

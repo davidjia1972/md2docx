@@ -80,11 +80,19 @@ jobs:
             build_script: packaging/windows/build_windows.bat
             artifact_pattern: "releases/v*/md2docx-v*-Windows.*"
             
-          # macOS - 构建 macOS 版本
-          - os: macos-latest
-            platform: macos  
+          # macOS Intel - 构建 macOS Intel 版本
+          - os: macos-12
+            platform: macos
+            arch: x86_64
             build_script: packaging/macos/build_macos.sh
-            artifact_pattern: "releases/v*/md2docx-v*-macOS.*"
+            artifact_pattern: "releases/v*/md2docx-v*-macOS-x86_64.*"
+            
+          # macOS Apple Silicon - 构建 macOS Apple Silicon 版本  
+          - os: macos-latest
+            platform: macos
+            arch: arm64
+            build_script: packaging/macos/build_macos.sh
+            artifact_pattern: "releases/v*/md2docx-v*-macOS-arm64.*"
     
     runs-on: ${{ matrix.os }}
     
@@ -136,6 +144,8 @@ jobs:
         
     - name: Build application
       shell: bash
+      env:
+        BUILD_ARCH: ${{ matrix.arch || '' }}
       run: |
         # 设置执行权限
         if [[ "${{ matrix.platform }}" != "windows" ]]; then
@@ -161,14 +171,19 @@ jobs:
         elif [[ "${{ matrix.platform }}" == "windows" ]]; then
           ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip
         elif [[ "${{ matrix.platform }}" == "macos" ]]; then
-          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS.dmg || \
-          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS/
+          if [[ -n "${{ matrix.arch }}" ]]; then
+            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS-${{ matrix.arch }}.dmg || \
+            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS-${{ matrix.arch }}/
+          else
+            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS.dmg || \
+            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS/
+          fi
         fi
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.platform }}-build
+        name: ${{ matrix.platform }}${{ matrix.arch && format('-{0}', matrix.arch) || '' }}-build
         path: ${{ matrix.artifact_pattern }}
         if-no-files-found: error
         retention-days: 30
@@ -176,7 +191,7 @@ jobs:
     - name: Upload checksums
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.platform }}-checksums
+        name: ${{ matrix.platform }}${{ matrix.arch && format('-{0}', matrix.arch) || '' }}-checksums
         path: releases/v${{ needs.prepare.outputs.version }}/checksums.txt
         if-no-files-found: warn
 
@@ -226,10 +241,19 @@ jobs:
         
         | 平台 | 文件 | 说明 |
         |------|------|------|
-        | 🍎 **macOS** | `md2docx-v${{ needs.prepare.outputs.version }}-macOS.dmg` | macOS 10.15+ |
+        | 🍎 **macOS Intel** | `md2docx-v${{ needs.prepare.outputs.version }}-macOS-x86_64.dmg` | Intel Mac (macOS 10.15+) |
+        | 🍎 **macOS Apple Silicon** | `md2docx-v${{ needs.prepare.outputs.version }}-macOS-arm64.dmg` | Apple Silicon Mac (macOS 11.0+) |
         | 🪟 **Windows** | `md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip` | Windows 10+ |
         | 🐧 **Linux** | `md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz` | 大部分发行版 |
         | 🐧 **Linux** | `md2docx-v${{ needs.prepare.outputs.version }}-x86_64.AppImage` | 便携版本 |
+        
+        ### 🔍 如何选择 macOS 版本？
+        
+        **查看您的 Mac 架构**：
+        - 点击苹果菜单 > 关于本机
+        - 查看 "芯片" 或 "处理器" 信息：
+          - **Apple M1/M2/M3** 系列 → 下载 `arm64` 版本
+          - **Intel** 处理器 → 下载 `x86_64` 版本
         
         ## 🔐 文件验证
         
