@@ -1,0 +1,282 @@
+name: Cross-Platform Build and Release
+
+on:
+  # 标签触发 - 推送 v* 标签时触发构建
+  push:
+    tags: ['v*.*.*']
+    
+  # 手动触发 - 作为备用选项
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '发布版本号（例如: 1.0.0）'
+        required: true
+        type: string
+        default: '1.0.0'
+      skip_release:
+        description: '跳过自动发布到 GitHub Releases'
+        required: false
+        type: boolean
+        default: false
+
+# 并发控制 - 避免同时运行多个构建
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# 环境变量
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  # 预处理作业 - 获取版本信息
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Extract version information
+      id: version
+      run: |
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION=${GITHUB_REF#refs/tags/v}
+        fi
+        
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # 判断是否为预发布版本
+        if [[ "$VERSION" =~ (alpha|beta|rc|dev) ]]; then
+          echo "is_prerelease=true" >> $GITHUB_OUTPUT
+        else
+          echo "is_prerelease=false" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "🔖 Version: $VERSION"
+        echo "🚀 Is prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') || contains(github.ref, 'dev') }}"
+
+  # 跨平台构建作业
+  build:
+    needs: prepare
+    strategy:
+      fail-fast: false  # 一个平台失败不影响其他平台
+      matrix:
+        include:
+          # Ubuntu - 构建 Linux 版本
+          - os: ubuntu-latest
+            platform: linux
+            build_script: packaging/linux/build_linux.sh
+            artifact_pattern: "releases/v*/md2docx-v*-Linux.*"
+            
+          # Windows - 构建 Windows 版本  
+          - os: windows-latest
+            platform: windows
+            build_script: packaging/windows/build_windows.bat
+            artifact_pattern: "releases/v*/md2docx-v*-Windows.*"
+            
+          # macOS - 构建 macOS 版本
+          - os: macos-latest
+            platform: macos  
+            build_script: packaging/macos/build_macos.sh
+            artifact_pattern: "releases/v*/md2docx-v*-macOS.*"
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        
+    - name: Install base dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+        
+    # Ubuntu 特定设置
+    - name: Install Linux dependencies
+      if: matrix.platform == 'linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc fuse
+        pip install pyinstaller
+        
+        # 下载 AppImage 工具
+        wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x appimagetool
+        sudo mv appimagetool /usr/local/bin/
+        
+    # Windows 特定设置
+    - name: Install Windows dependencies
+      if: matrix.platform == 'windows'
+      run: |
+        choco install pandoc -y
+        pip install pyinstaller
+        
+    # macOS 特定设置  
+    - name: Install macOS dependencies
+      if: matrix.platform == 'macos'
+      run: |
+        brew install pandoc create-dmg
+        pip install py2app
+        
+    - name: Update VERSION file
+      run: |
+        echo "${{ needs.prepare.outputs.version }}" > VERSION
+        
+    - name: Build application
+      shell: bash
+      run: |
+        # 设置执行权限
+        if [[ "${{ matrix.platform }}" != "windows" ]]; then
+          chmod +x ${{ matrix.build_script }}
+        fi
+        
+        # 执行构建脚本
+        if [[ "${{ matrix.platform }}" == "windows" ]]; then
+          cmd.exe //c "${{ matrix.build_script }}"
+        else
+          bash ${{ matrix.build_script }}
+        fi
+        
+    - name: Verify build artifacts
+      shell: bash
+      run: |
+        echo "🔍 Checking build artifacts..."
+        ls -la releases/v${{ needs.prepare.outputs.version }}/ || true
+        
+        # 验证关键文件存在
+        if [[ "${{ matrix.platform }}" == "linux" ]]; then
+          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz
+        elif [[ "${{ matrix.platform }}" == "windows" ]]; then
+          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip
+        elif [[ "${{ matrix.platform }}" == "macos" ]]; then
+          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS.dmg || \
+          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS/
+        fi
+        
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-build
+        path: ${{ matrix.artifact_pattern }}
+        if-no-files-found: error
+        retention-days: 30
+        
+    - name: Upload checksums
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-checksums
+        path: releases/v${{ needs.prepare.outputs.version }}/checksums.txt
+        if-no-files-found: warn
+
+  # 发布作业 - 收集所有构建产物并创建 Release
+  release:
+    needs: [prepare, build]
+    if: ${{ !inputs.skip_release }}
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write  # 需要写权限来创建 Release
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Download all build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
+        
+    - name: Organize release files
+      run: |
+        mkdir -p ./release-files
+        
+        # 复制构建产物
+        find ./artifacts -name "md2docx-v*.*" -type f -exec cp {} ./release-files/ \;
+        
+        # 合并校验和文件
+        echo "# SHA256 Checksums - md2docx v${{ needs.prepare.outputs.version }}" > ./release-files/checksums.txt
+        echo "# Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ./release-files/checksums.txt
+        echo "" >> ./release-files/checksums.txt
+        
+        find ./artifacts -name "checksums.txt" -exec cat {} \; | grep -v "^#" | sort >> ./release-files/checksums.txt || true
+        
+        echo "📦 Release files prepared:"
+        ls -la ./release-files/
+        
+    - name: Generate release notes
+      run: |
+        cat > ./release-notes.md << 'EOF'
+        # md2docx v${{ needs.prepare.outputs.version }}
+        
+        🎉 跨平台 Markdown 到 Word 文档转换工具新版本发布！
+        
+        ## 📦 下载
+        
+        | 平台 | 文件 | 说明 |
+        |------|------|------|
+        | 🍎 **macOS** | `md2docx-v${{ needs.prepare.outputs.version }}-macOS.dmg` | macOS 10.15+ |
+        | 🪟 **Windows** | `md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip` | Windows 10+ |
+        | 🐧 **Linux** | `md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz` | 大部分发行版 |
+        | 🐧 **Linux** | `md2docx-v${{ needs.prepare.outputs.version }}-x86_64.AppImage` | 便携版本 |
+        
+        ## 🔐 文件验证
+        
+        使用 `checksums.txt` 验证下载文件的完整性：
+        ```bash
+        sha256sum -c checksums.txt
+        ```
+        
+        ## 📋 系统要求
+        
+        - **外部依赖**: 需要安装 [Pandoc](https://pandoc.org/installing.html)
+        - **内存**: 至少 100MB RAM
+        - **存储**: 200MB 磁盘空间
+        
+        ## 🚀 快速开始
+        
+        1. 下载对应平台的安装包
+        2. 安装 Pandoc：
+           - macOS: `brew install pandoc`
+           - Windows: 从官网下载安装程序
+           - Linux: `sudo apt install pandoc`
+        3. 运行 md2docx 开始转换文档！
+        
+        ---
+        
+        🤖 此版本通过 GitHub Actions 自动构建
+        📅 构建时间: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        🔗 完整更新日志: [查看提交记录](https://github.com/${{ github.repository }}/commits/v${{ needs.prepare.outputs.version }})
+        EOF
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ needs.prepare.outputs.version }}
+        name: "md2docx v${{ needs.prepare.outputs.version }}"
+        body_path: ./release-notes.md
+        files: ./release-files/*
+        prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
+        generate_release_notes: true
+        make_latest: ${{ needs.prepare.outputs.is_prerelease == 'false' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Release summary
+      run: |
+        echo "🎉 Release v${{ needs.prepare.outputs.version }} created successfully!"
+        echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.version }}"
+        echo ""
+        echo "📦 Files released:"
+        ls -la ./release-files/

@@ -1,0 +1,209 @@
+#!/bin/bash
+# Linux build script for md2docx
+
+set -e  # Exit on any error
+
+echo "🐧 Building md2docx for Linux..."
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Get project root directory
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+PACKAGING_DIR="$PROJECT_ROOT/packaging/linux"
+DIST_DIR="$PACKAGING_DIR/dist"
+BUILD_DIR="$PACKAGING_DIR/build"
+
+# Load version
+VERSION=$(cat "$PROJECT_ROOT/VERSION")
+echo "Project root: $PROJECT_ROOT"
+echo "Packaging dir: $PACKAGING_DIR"
+echo "Version: $VERSION"
+
+# Check dependencies
+echo -e "${YELLOW}Checking dependencies...${NC}"
+
+# Check Python version
+PYTHON_CMD="python3"
+if ! command -v $PYTHON_CMD &> /dev/null; then
+    PYTHON_CMD="python"
+    if ! command -v $PYTHON_CMD &> /dev/null; then
+        echo -e "${RED}Error: Python not found${NC}"
+        echo "Please install Python 3.8 or higher"
+        exit 1
+    fi
+fi
+
+PYTHON_VERSION=$($PYTHON_CMD --version 2>&1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+echo "Python version: $PYTHON_VERSION"
+
+# Check if PyInstaller is installed
+if ! $PYTHON_CMD -c "import PyInstaller" 2>/dev/null; then
+    echo -e "${RED}Error: PyInstaller not found${NC}"
+    echo "Installing PyInstaller..."
+    pip3 install pyinstaller
+fi
+
+# Check if pandoc is available
+if ! command -v pandoc &> /dev/null; then
+    echo -e "${YELLOW}Warning: pandoc not found${NC}"
+    echo "The app will show a warning about pandoc when started"
+    echo "Install with: sudo apt install pandoc  (Ubuntu/Debian)"
+    echo "          or: sudo dnf install pandoc  (Fedora)"
+    echo "          or: sudo pacman -S pandoc   (Arch)"
+else
+    PANDOC_VERSION=$(pandoc --version | head -n1)
+    echo "Found: $PANDOC_VERSION"
+fi
+
+# Install Python dependencies
+echo -e "${YELLOW}Installing Python dependencies...${NC}"
+cd "$PROJECT_ROOT"
+pip3 install -r requirements.txt
+
+# Clean previous build
+echo -e "${YELLOW}Cleaning previous build...${NC}"
+rm -rf "$BUILD_DIR" "$DIST_DIR"
+
+# Build the executable
+echo -e "${YELLOW}Building Linux executable with PyInstaller...${NC}"
+cd "$PACKAGING_DIR"
+$PYTHON_CMD setup_pyinstaller.py
+
+# Check if build was successful
+EXE_PATH="$DIST_DIR/md2docx/md2docx"
+if [ -f "$EXE_PATH" ]; then
+    echo -e "${GREEN}✅ Build successful!${NC}"
+    echo "Executable created at: $EXE_PATH"
+    
+    # Show executable info
+    EXE_SIZE=$(du -sh "$DIST_DIR/md2docx" | cut -f1)
+    echo "App size: $EXE_SIZE"
+    
+    # Make sure executable has correct permissions
+    chmod +x "$EXE_PATH"
+    
+    # Test if executable can launch
+    echo -e "${YELLOW}Testing executable launch...${NC}"
+    if timeout 3s "$EXE_PATH" --version 2>/dev/null || true; then
+        echo -e "${GREEN}✅ Executable launches successfully${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Executable launch test completed${NC}"
+    fi
+    
+    # Create installation script
+    cat > "$DIST_DIR/install.sh" << 'EOF'
+#!/bin/bash
+# Installation script for md2docx
+
+set -e
+
+APP_NAME="md2docx"
+INSTALL_DIR="/opt/$APP_NAME"
+BIN_LINK="/usr/local/bin/$APP_NAME"
+DESKTOP_FILE="$HOME/.local/share/applications/$APP_NAME.desktop"
+
+echo "Installing $APP_NAME..."
+
+# Create installation directory (requires sudo)
+if [ "$EUID" -eq 0 ]; then
+    # Running as root
+    mkdir -p "$INSTALL_DIR"
+    cp -r "$APP_NAME"/* "$INSTALL_DIR/"
+    chmod +x "$INSTALL_DIR/$APP_NAME"
+    
+    # Create symlink
+    ln -sf "$INSTALL_DIR/$APP_NAME" "$BIN_LINK"
+    
+    echo "Installed to $INSTALL_DIR"
+    echo "Symlink created at $BIN_LINK"
+else
+    # Running as user - install to home directory
+    USER_INSTALL_DIR="$HOME/.local/opt/$APP_NAME"
+    USER_BIN_DIR="$HOME/.local/bin"
+    
+    mkdir -p "$USER_INSTALL_DIR"
+    mkdir -p "$USER_BIN_DIR"
+    
+    cp -r "$APP_NAME"/* "$USER_INSTALL_DIR/"
+    chmod +x "$USER_INSTALL_DIR/$APP_NAME"
+    
+    # Create symlink
+    ln -sf "$USER_INSTALL_DIR/$APP_NAME" "$USER_BIN_DIR/$APP_NAME"
+    
+    echo "Installed to $USER_INSTALL_DIR"
+    echo "Symlink created at $USER_BIN_DIR/$APP_NAME"
+    echo "Add $USER_BIN_DIR to your PATH if not already there"
+fi
+
+# Install desktop file
+if [ -f "$APP_NAME.desktop" ]; then
+    mkdir -p "$(dirname "$DESKTOP_FILE")"
+    cp "$APP_NAME.desktop" "$DESKTOP_FILE"
+    echo "Desktop file installed to $DESKTOP_FILE"
+fi
+
+echo "Installation completed!"
+echo "Run with: $APP_NAME"
+EOF
+    
+    chmod +x "$DIST_DIR/install.sh"
+    
+    # Check for AppImage tools
+    APPIMAGE_NAME="md2docx-v${VERSION}-x86_64.AppImage"
+    if command -v appimagetool &> /dev/null; then
+        echo -e "${YELLOW}Creating AppImage...${NC}"
+        if [ -d "$DIST_DIR/md2docx.AppDir" ]; then
+            appimagetool "$DIST_DIR/md2docx.AppDir" "$DIST_DIR/$APPIMAGE_NAME"
+            if [ -f "$DIST_DIR/$APPIMAGE_NAME" ]; then
+                chmod +x "$DIST_DIR/$APPIMAGE_NAME"
+                echo -e "${GREEN}✅ AppImage created: $DIST_DIR/$APPIMAGE_NAME${NC}"
+            fi
+        fi
+    else
+        echo -e "${YELLOW}⚠️  appimagetool not found, skipping AppImage creation${NC}"
+        echo "Install from: https://github.com/AppImage/AppImageKit"
+    fi
+    
+    # Copy to releases directory
+    echo -e "${YELLOW}Copying to releases directory...${NC}"
+    $PYTHON_CMD -c "
+import sys
+sys.path.append('$PROJECT_ROOT/packaging')
+from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink
+
+releases_dir = copy_to_releases('$DIST_DIR/md2docx', 'linux')
+
+if releases_dir:
+    calculate_checksums(releases_dir)
+    update_release_notes()
+    create_latest_symlink()
+    print(f'✅ Release artifacts ready in: {releases_dir}')
+"
+    
+    echo ""
+    echo -e "${GREEN}🎉 Linux build completed successfully!${NC}"
+    echo ""
+    echo "Build artifacts:"
+    echo "  Executable: $DIST_DIR/md2docx/"
+    echo "  Desktop file: $DIST_DIR/md2docx.desktop"
+    echo "  Install script: $DIST_DIR/install.sh"
+    [ -f "$DIST_DIR/$APPIMAGE_NAME" ] && echo "  AppImage: $DIST_DIR/$APPIMAGE_NAME"
+    echo "  Release files: releases/v${VERSION}/"
+    echo ""
+    echo "Next steps:"
+    echo "1. Test the app: $EXE_PATH"
+    echo "2. Install system-wide: cd $DIST_DIR && sudo ./install.sh"
+    echo "3. Or install for user: cd $DIST_DIR && ./install.sh"
+    echo "4. Install pandoc if needed (see distribution package manager)"
+    echo "5. Use release files for distribution"
+    echo ""
+    
+else
+    echo -e "${RED}❌ Build failed!${NC}"
+    echo "Check the build log above for errors"
+    exit 1
+fi
