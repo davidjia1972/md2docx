@@ -8,7 +8,7 @@ from enum import Enum
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from utils.config_manager import config
+from utils.config_manager import get_config
 
 class NamingStrategy(Enum):
     """File naming strategy"""
@@ -38,6 +38,7 @@ class FileNamer:
     @classmethod
     def from_config(cls) -> 'FileNamer':
         """Create file namer from config file"""
+        config = get_config()
         output_settings = config.get_output_settings()
         
         strategy_str = output_settings.get("naming_strategy", "timestamp")

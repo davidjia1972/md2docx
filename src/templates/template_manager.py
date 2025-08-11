@@ -7,23 +7,31 @@ from typing import List, Dict, Tuple, Optional
 from zipfile import ZipFile
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from utils.config_manager import config
+from utils.config_manager import get_config
 from utils.i18n_manager import t
+from utils.platform_paths import get_app_dirs
 
 class TemplateManager:
     """Template manager, manages DOCX template files"""
     
     def __init__(self):
-        # Template directories
-        self.template_dir = Path(__file__).parent.parent.parent / "templates"
-        self.user_template_dir = self.template_dir / "user"
+        # Get platform-appropriate directories
+        app_dirs = get_app_dirs()
         
-        # Ensure directories exist
-        self.template_dir.mkdir(exist_ok=True)
-        self.user_template_dir.mkdir(exist_ok=True)
+        # Built-in templates from app bundle/resources
+        self.builtin_template_dir = Path(__file__).parent.parent.parent / "templates"
         
-        # Built-in template path
-        self.default_template_path = self.template_dir / "default.docx"
+        # User templates in platform-specific directory
+        self.user_template_dir = app_dirs['templates']
+        
+        # Ensure user template directory exists
+        self.user_template_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Built-in default template path
+        self.default_template_path = self.builtin_template_dir / "default.docx"
+        
+        # Initialize config manager
+        self.config = get_config()
     
     def is_valid_docx(self, file_path: Path) -> bool:
         """Validate if file is valid DOCX"""
@@ -93,7 +101,7 @@ class TemplateManager:
     
     def get_default_template_path(self) -> Optional[str]:
         """Get current default template path"""
-        default_template = config.get("templates.default_template", "default.docx")
+        default_template = self.config.get("templates.default_template", "default.docx")
         
         # If built-in template
         if default_template == "default.docx":
@@ -158,14 +166,14 @@ class TemplateManager:
         path = Path(template_path)
         
         if path == self.default_template_path:
-            config.set_default_template("default.docx")
+            self.config.set_default_template("default.docx")
         else:
             # Path relative to user directory
             if path.is_absolute() and path.is_relative_to(self.user_template_dir):
                 relative_path = path.relative_to(self.user_template_dir)
-                config.set_default_template(str(relative_path))
+                self.config.set_default_template(str(relative_path))
             else:
-                config.set_default_template(template_path)
+                self.config.set_default_template(template_path)
     
     def create_default_template(self):
         """Create a basic default template file"""
@@ -175,11 +183,21 @@ class TemplateManager:
         # Create internationalized README file with template usage instructions
         readme_content = t("templates_extended.readme_content")
         
-        # Create instruction file
-        readme_path = self.template_dir / "README.md"
+        # Create instruction file in user template directory
+        readme_path = self.user_template_dir / "README.md"
         with open(readme_path, 'w', encoding='utf-8') as f:
             f.write(readme_content)
     
 
-# Global template manager instance
-template_manager = TemplateManager()
+# Global template manager instance - lazy initialization
+_template_manager_instance = None
+
+def get_template_manager() -> TemplateManager:
+    """获取模板管理器单例"""
+    global _template_manager_instance
+    if _template_manager_instance is None:
+        _template_manager_instance = TemplateManager()
+    return _template_manager_instance
+
+# 向后兼容的全局实例
+template_manager = None  # 将在首次调用 get_template_manager() 时初始化

@@ -8,7 +8,7 @@ from .pandoc_wrapper import pandoc, ConversionQuality
 from .file_namer import FileNamer
 from .progress_tracker import ProgressTracker, ConversionTask, TaskStatus
 from templates.template_manager import template_manager
-from utils.config_manager import config
+from utils.config_manager import get_config
 from utils.emoji_processor import emoji_processor
 from utils.i18n_manager import t
 
@@ -177,6 +177,7 @@ class BatchConverter(QThread):
         temp_file_info = None
         
         # Check if emoji removal is enabled
+        config = get_config()
         remove_emoji = config.get("output_settings.remove_emoji", True)
         
         if remove_emoji and emoji_processor.is_available():
@@ -351,5 +352,15 @@ class ConversionManager:
         """Error occurred"""
         self.is_converting = False
 
-# Global conversion manager instance
-conversion_manager = ConversionManager()
+# Global conversion manager instance (lazy initialization)
+_conversion_manager_instance = None
+
+def get_conversion_manager() -> ConversionManager:
+    """Get global conversion manager instance (singleton)"""
+    global _conversion_manager_instance
+    if _conversion_manager_instance is None:
+        _conversion_manager_instance = ConversionManager()
+    return _conversion_manager_instance
+
+# Backward compatibility
+conversion_manager = None  # Will be initialized on first access

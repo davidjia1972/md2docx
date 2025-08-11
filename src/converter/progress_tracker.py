@@ -265,6 +265,10 @@ class ProgressTracker(QObject):
                 return task
         return None
     
+    def get_task(self, task_id: str) -> Optional[ConversionTask]:
+        """Get task by ID"""
+        return self.tasks.get(task_id)
+    
     def reset(self):
         """Reset tracker"""
         self.tasks.clear()

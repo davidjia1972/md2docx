@@ -15,11 +15,11 @@ from PySide6.QtCore import Qt, QThread, Signal, QSize
 from PySide6.QtGui import QFont, QIcon, QDragEnterEvent, QDropEvent, QPixmap
 
 # Import core modules
-from converter.batch_converter import conversion_manager, ConversionQuality
+from converter.batch_converter import get_conversion_manager, ConversionQuality
 from converter.pandoc_wrapper import pandoc
-from templates.template_manager import template_manager
+from templates.template_manager import get_template_manager
 from utils.file_scanner import quick_scan
-from utils.config_manager import config
+from utils.config_manager import get_config
 from utils.icon_manager import icon_manager
 from utils.i18n_manager import i18n, t
 from utils.emoji_processor import emoji_processor, cleanup_orphaned_temp_files
@@ -259,14 +259,44 @@ class MainWindow(QMainWindow):
         # Add some space after button
         main_layout.addSpacing(8)
         
-        # File list
+        # File list header with clear button
+        files_header_layout = QHBoxLayout()
+        
         self.files_label = QLabel(t("ui.labels.files_to_convert"))
         files_font = QFont()
         files_font.setPointSize(12)
         files_font.setBold(True)
         self.files_label.setFont(files_font)
         self.files_label.setFixedHeight(20)  # Fix label height
-        main_layout.addWidget(self.files_label)
+        
+        # Clear list button
+        self.clear_list_btn = QPushButton(t("ui.buttons.clear_list"))
+        self.clear_list_btn.setFixedHeight(24)
+        self.clear_list_btn.setMaximumWidth(80)
+        self.clear_list_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f5f5f5;
+                color: #666;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                padding: 2px 8px;
+                font-size: 11px;
+            }
+            QPushButton:hover {
+                background-color: #e8e8e8;
+                color: #333;
+            }
+            QPushButton:pressed {
+                background-color: #ddd;
+            }
+        """)
+        self.clear_list_btn.clicked.connect(self.clear_file_list)
+        
+        files_header_layout.addWidget(self.files_label)
+        files_header_layout.addStretch()  # Push clear button to the right
+        files_header_layout.addWidget(self.clear_list_btn)
+        
+        main_layout.addLayout(files_header_layout)
         
         self.file_list = QListWidget()
         self.file_list.setMinimumHeight(100)  # Set minimum height instead of maximum
@@ -631,7 +661,8 @@ class MainWindow(QMainWindow):
         self.convert_btn.clicked.connect(self.start_conversion)
         self.cancel_btn.clicked.connect(self.cancel_conversion)
         
-        # Conversion manager signals
+        # Conversion manager signals (lazy initialization)
+        conversion_manager = get_conversion_manager()
         conversion_manager.converter.conversion_started.connect(self.on_conversion_started)
         conversion_manager.converter.conversion_finished.connect(self.on_conversion_finished)
         conversion_manager.converter.error_occurred.connect(self.on_conversion_error)
@@ -639,9 +670,16 @@ class MainWindow(QMainWindow):
         # Progress tracking
         progress_tracker = conversion_manager.get_progress_tracker()
         progress_tracker.progress_updated.connect(self.on_progress_updated)
+        progress_tracker.task_started.connect(self.on_task_started)
+        progress_tracker.task_completed.connect(self.on_task_completed)
+        progress_tracker.batch_started.connect(self.on_batch_started)
+        progress_tracker.batch_completed.connect(self.on_batch_completed)
+        progress_tracker.time_estimated.connect(self.on_time_estimated)
     
     def load_settings(self):
         """Load settings"""
+        config = get_config()
+        
         # Load recursive setting
         recursive = config.get("ui.recursive_scan", True)
         self.recursive_checkbox.setChecked(recursive)
@@ -679,23 +717,20 @@ class MainWindow(QMainWindow):
     def _apply_saved_language_setting(self):
         """Apply saved language setting and sync UI"""
         try:
+            config = get_config()
             saved_language = config.get_language_setting()
-            print(f"应用保存的语言设置: {saved_language}")
             
             if saved_language and saved_language != "auto":
                 # Set specific language
-                success = i18n.set_language(saved_language)
-                print(f"设置语言 {saved_language} 结果: {success}")
+                i18n.set_language(saved_language)
             else:
                 # Use current auto-detected language and make sure UI is synced
-                current_lang = i18n.get_current_language()
-                print(f"使用自动检测的语言: {current_lang}")
                 # Trigger UI update even if language doesn't change
                 self.update_ui_texts()
                 self.update_language_list_texts()
                 
         except Exception as e:
-            print(f"应用语言设置失败: {e}")
+            # Keep critical error information for debugging
             import traceback
             traceback.print_exc()
     
@@ -704,6 +739,7 @@ class MainWindow(QMainWindow):
         try:
             self.template_combo.clear()
             
+            template_manager = get_template_manager()
             templates = template_manager.get_all_templates()
             
             if not templates:
@@ -748,6 +784,7 @@ class MainWindow(QMainWindow):
                 self.language_combo.addItem(display_name, lang_code)
             
             # Select current language
+            config = get_config()
             saved_language = config.get_language_setting()
             if saved_language == "auto":
                 self.language_combo.setCurrentIndex(0)
@@ -761,7 +798,9 @@ class MainWindow(QMainWindow):
             self.language_combo.currentTextChanged.connect(self.on_language_changed)
                         
         except Exception as e:
-            print(f"Error loading languages: {e}")
+            # Keep critical error for debugging
+            import traceback
+            traceback.print_exc()
             self.language_combo.addItem(t("tooltips.language_load_failed"), None)
             # Make sure to reconnect signal even if error occurred
             try:
@@ -776,16 +815,14 @@ class MainWindow(QMainWindow):
             return
             
         # Save language setting
+        config = get_config()
         config.set_language_setting(selected_data)
-        
-        print(f"用户选择语言: {selected_data}")
         
         # Apply language change
         if selected_data == "auto":
             # Re-detect system language
             i18n._auto_detect_system_language()
             detected_lang = i18n.get_current_language()
-            print(f"自动检测到语言: {detected_lang}")
             
             # Always update UI when switching to auto-detect, even if language is the same
             success = i18n.set_language(detected_lang)
@@ -794,27 +831,19 @@ class MainWindow(QMainWindow):
                 self.update_ui_texts()
                 self.update_language_list_texts()
                 self._update_qt_translator(detected_lang)
-                print(f"自动检测模式：UI已更新为 {detected_lang}")
-            else:
-                print(f"自动检测失败：无法设置语言 {detected_lang}")
         else:
             # Set specific language
-            print(f"设置语言为: {selected_data}")
             success = i18n.set_language(selected_data)
             if success:
-                print(f"语言切换成功: {selected_data}")
                 self._update_qt_translator(selected_data)
-            else:
-                print(f"语言切换失败: {selected_data}")
     
     def _update_qt_translator(self, language_code):
         """Update Qt translator for application UI (native dialogs use system language)"""
         # Native dialogs automatically use system language, this is only for Qt widgets
-        print(f"Language switched to {language_code}. Native dialogs will use system language.")
+        pass
     
     def on_ui_language_changed(self, language_code):
         """Handle UI language change"""
-        print(f"UI language changed to: {language_code}")
         
         # Update all UI elements with new translations
         self.update_ui_texts()
@@ -865,6 +894,7 @@ class MainWindow(QMainWindow):
         self.convert_btn.setText(t("ui.buttons.start"))
         self.cancel_btn.setText(t("ui.buttons.cancel"))
         self.browse_template_btn.setText(t("ui.buttons.browse"))
+        self.clear_list_btn.setText(t("ui.buttons.clear_list"))
         
         # Update radio buttons
         self.overwrite_radio.setText(t("ui.options.overwrite"))
@@ -977,16 +1007,33 @@ class MainWindow(QMainWindow):
                                t("dialogs.file_scan_failed.message", error=str(e)))
     
     def refresh_file_list(self):
-        """Refresh file list with simple text items (testing hover effects)"""
+        """Refresh file list with custom FileListItem widgets"""
+        from ui.file_list_item import ConversionStatus
+        
+        # Store current file statuses to preserve them
+        current_statuses = {}
+        for i in range(self.file_list.count()):
+            item = self.file_list.item(i)
+            if isinstance(item, FileListItem):
+                current_statuses[item.get_file_path()] = item.get_status()
+        
         self.file_list.clear()
         
         for file_path in self.markdown_files:
-            # Create simple text item for now to test hover effects
-            file_name = Path(file_path).name
-            item = QListWidgetItem(f"📄 {file_name}")
-            item.setData(Qt.UserRole, file_path)
-            item.setToolTip(file_path)
+            # Create FileListItem with status tracking
+            item = FileListItem(file_path)
+            widget = item.create_widget(self.file_list)
+            
+            # Restore previous status if it existed
+            if file_path in current_statuses:
+                item.set_status(current_statuses[file_path])
+            
+            # Connect delete signal
+            widget.delete_requested.connect(self.remove_file)
+            
+            # Add to list and set widget
             self.file_list.addItem(item)
+            self.file_list.setItemWidget(item, widget)
         
         # Update file statistics
         count = len(self.markdown_files)
@@ -1025,7 +1072,6 @@ class MainWindow(QMainWindow):
         if file_path and file_path in self.markdown_files:
             self.markdown_files.remove(file_path)
             self.refresh_file_list()
-            print(f"已从列表中移除文件: {Path(file_path).name}")
     
     def show_file_in_folder(self, file_path: str):
         """在文件夹中显示文件"""
@@ -1053,21 +1099,94 @@ class MainWindow(QMainWindow):
             if file_path in self.markdown_files:
                 self.markdown_files.remove(file_path)
                 self.refresh_file_list()
-                print(f"已从列表中移除文件: {Path(file_path).name}")
         except ValueError:
-            print(f"文件不在列表中: {file_path}")
+            pass
+    
+    def clear_file_list(self):
+        """清除所有文件"""
+        if self.markdown_files:
+            # Create message box with custom button text
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Question)
+            msg_box.setWindowTitle(t("dialogs.clear_list_confirm.title"))
+            msg_box.setText(t("dialogs.clear_list_confirm.message"))
+            
+            # Add custom buttons with translated text
+            yes_button = msg_box.addButton(t("ui.buttons.yes"), QMessageBox.YesRole)
+            no_button = msg_box.addButton(t("ui.buttons.no"), QMessageBox.NoRole)
+            msg_box.setDefaultButton(no_button)
+            
+            # Show dialog and check result
+            msg_box.exec()
+            if msg_box.clickedButton() == yes_button:
+                self.markdown_files.clear()
+                self.refresh_file_list()
+    
+    def get_files_needing_conversion(self) -> List[str]:
+        """获取需要转换的文件列表（状态为PENDING或FAILED的文件）"""
+        from ui.file_list_item import ConversionStatus
+        
+        files_needing_conversion = []
+        
+        # 遍历文件列表中的所有项
+        for i in range(self.file_list.count()):
+            item = self.file_list.item(i)
+            if isinstance(item, FileListItem):
+                status = item.get_status()
+                file_path = item.get_file_path()
+                if status in [ConversionStatus.PENDING, ConversionStatus.FAILED]:
+                    files_needing_conversion.append(file_path)
+        
+        # 向后兼容：只有当列表中没有任何FileListItem时，才返回所有文件
+        has_file_list_items = any(isinstance(self.file_list.item(i), FileListItem) 
+                                 for i in range(self.file_list.count()))
+        
+        if not has_file_list_items and self.markdown_files:
+            files_needing_conversion = self.markdown_files.copy()
+        
+        return files_needing_conversion
+    
+    def update_file_status(self, file_path: str, status: 'ConversionStatus'):
+        """根据文件路径更新文件状态"""
+        from ui.file_list_item import ConversionStatus
+        
+        for i in range(self.file_list.count()):
+            item = self.file_list.item(i)
+            if isinstance(item, FileListItem) and item.get_file_path() == file_path:
+                item.set_status(status)
+                break
+    
+    def set_files_converting(self, file_paths: List[str]):
+        """将指定文件状态设置为转换中"""
+        from ui.file_list_item import ConversionStatus
+        
+        for file_path in file_paths:
+            self.update_file_status(file_path, ConversionStatus.CONVERTING)
+    
+    def mark_file_success(self, file_path: str):
+        """标记文件转换成功"""
+        from ui.file_list_item import ConversionStatus
+        self.update_file_status(file_path, ConversionStatus.SUCCESS)
+    
+    def mark_file_failed(self, file_path: str):
+        """标记文件转换失败"""
+        from ui.file_list_item import ConversionStatus
+        self.update_file_status(file_path, ConversionStatus.FAILED)
     
     def on_recursive_changed(self):
         """Recursive option changed"""
+        config = get_config()
         config.set("ui.recursive_scan", self.recursive_checkbox.isChecked())
     
     def on_file_handling_changed(self):
         """File handling option changed"""
+        config = get_config()
         overwrite = self.overwrite_radio.isChecked()
         config.set("output_settings.overwrite_files", overwrite)
     
     def on_emoji_removal_changed(self):
         """Emoji removal option changed"""
+        config = get_config()
         remove_emoji = self.remove_emoji_checkbox.isChecked()
         config.set("output_settings.remove_emoji", remove_emoji)
     
@@ -1075,6 +1194,7 @@ class MainWindow(QMainWindow):
         """Template selection changed"""
         current_data = self.template_combo.currentData()
         if current_data:
+            template_manager = get_template_manager()
             template_manager.set_default_template(current_data)
     
     def browse_template(self):
@@ -1088,6 +1208,7 @@ class MainWindow(QMainWindow):
         
         if file_path:
             # Add to template manager
+            template_manager = get_template_manager()
             success, message = template_manager.add_user_template(
                 Path(file_path), Path(file_path).stem
             )
@@ -1115,6 +1236,14 @@ class MainWindow(QMainWindow):
                               t("dialogs.install_pandoc_first.message"))
             return
         
+        # Get files that need conversion (only pending and failed files)
+        files_to_convert = self.get_files_needing_conversion()
+        
+        if not files_to_convert:
+            QMessageBox.information(self, t("dialogs.no_files_to_convert.title"),
+                                  t("dialogs.no_files_to_convert.message"))
+            return
+        
         # Save settings
         self.save_current_settings()
         
@@ -1122,17 +1251,21 @@ class MainWindow(QMainWindow):
         template_path = self.template_combo.currentData()
         
         # Validate files and template
+        conversion_manager = get_conversion_manager()
         valid, message = conversion_manager.validate_files_and_template(
-            self.markdown_files, template_path
+            files_to_convert, template_path
         )
         
         if not valid:
             QMessageBox.warning(self, t("dialogs.validation_failed.title"), message)
             return
         
+        # Set files to converting status before starting
+        self.set_files_converting(files_to_convert)
+        
         # Start conversion
         success = conversion_manager.start_conversion(
-            self.markdown_files,
+            files_to_convert,
             template_path,
             ConversionQuality.STANDARD
         )
@@ -1143,10 +1276,12 @@ class MainWindow(QMainWindow):
     
     def cancel_conversion(self):
         """Cancel conversion"""
+        conversion_manager = get_conversion_manager()
         conversion_manager.stop_conversion()
     
     def save_current_settings(self):
         """Save current settings"""
+        config = get_config()
         # Save output settings
         config.set("output_settings.overwrite_files", self.overwrite_radio.isChecked())
         config.set("output_settings.remove_emoji", self.remove_emoji_checkbox.isChecked())
@@ -1208,18 +1343,58 @@ class MainWindow(QMainWindow):
         self.progress_bar.setValue(progress)
         self.status_label.setText(message)
     
+    def on_task_started(self, task_id: str, filename: str):
+        """Task started - update file status"""
+        # File is already set to CONVERTING status by set_files_converting
+        pass
+    
+    def on_task_completed(self, task_id: str, success: bool, message: str):
+        """Task completed - update file status"""
+        # We need to find the file path associated with this task
+        # Since we don't have direct access to task info here, we'll use a workaround
+        # by checking the conversion manager's progress tracker
+        conversion_manager = get_conversion_manager()
+        progress_tracker = conversion_manager.get_progress_tracker()
+        task = progress_tracker.get_task(task_id)
+        
+        if task and task.input_file:
+            if success:
+                self.mark_file_success(task.input_file)
+            else:
+                self.mark_file_failed(task.input_file)
+    
+    def on_batch_started(self, total_tasks: int):
+        """Batch started"""
+        pass
+    
+    def on_batch_completed(self, stats):
+        """Batch completed"""
+        pass
+    
+    def on_time_estimated(self, time_str: str):
+        """Time estimate updated"""
+        pass
+    
+    
     def closeEvent(self, event):
         """Close event"""
         # If conversion is running, ask if user wants to cancel
+        conversion_manager = get_conversion_manager()
         if conversion_manager.is_converting:
-            reply = QMessageBox.question(
-                self, t("dialogs.confirm_close.title"), 
-                t("dialogs.confirm_close.message"),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No
-            )
+            # Create message box with custom button text
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Question)
+            msg_box.setWindowTitle(t("dialogs.confirm_close.title"))
+            msg_box.setText(t("dialogs.confirm_close.message"))
             
-            if reply == QMessageBox.Yes:
+            # Add custom buttons with translated text
+            yes_button = msg_box.addButton(t("ui.buttons.yes"), QMessageBox.YesRole)
+            no_button = msg_box.addButton(t("ui.buttons.no"), QMessageBox.NoRole)
+            msg_box.setDefaultButton(no_button)
+            
+            # Show dialog and check result
+            msg_box.exec()
+            if msg_box.clickedButton() == yes_button:
                 conversion_manager.stop_conversion()
                 self._cleanup_on_exit()
                 event.accept()

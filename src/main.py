@@ -22,9 +22,10 @@ except ImportError:
 # Import main window
 try:
     from ui.main_window import MainWindow
-    from templates.template_manager import template_manager
+    from templates.template_manager import get_template_manager
     from converter.pandoc_wrapper import pandoc
-    from utils.config_manager import config
+    from utils.config_manager import get_config
+    from utils.platform_paths import initialize_app_directories
 except ImportError as e:
     # Use basic English message since i18n system isn't loaded yet  
     print(f"Error: Failed to import modules - {e}")
@@ -39,9 +40,10 @@ class Application:
         self.qt_translators = []
         
     def setup_logging(self):
-        """Setup logging"""
-        log_dir = Path(__file__).parent.parent / "logs"
-        log_dir.mkdir(exist_ok=True)
+        """Setup logging with platform-appropriate directory"""
+        # Get platform-appropriate directories
+        app_dirs = initialize_app_directories()
+        log_dir = app_dirs['logs']
         
         log_file = log_dir / "converter.log"
         
@@ -295,9 +297,11 @@ class Application:
         self.main_window = MainWindow()
         
         # Restore window geometry from config
-        geometry = config.get("ui.window_geometry")
-        if geometry:
-            self.main_window.restoreGeometry(geometry)
+        config = get_config()
+        if config:  # Check if config is not None
+            geometry = config.get("ui.window_geometry")
+            if geometry:
+                self.main_window.restoreGeometry(geometry)
         
         return self.main_window
     
@@ -307,7 +311,9 @@ class Application:
             """Save settings"""
             if self.main_window:
                 # Save window geometry
-                config.set("ui.window_geometry", self.main_window.saveGeometry())
+                config = get_config()
+                if config:  # Check if config is not None
+                    config.set("ui.window_geometry", self.main_window.saveGeometry())
         
         self.app.aboutToQuit.connect(save_settings)
     
@@ -366,23 +372,31 @@ class Application:
     def _initialize_i18n(self):
         """Initialize internationalization system"""
         try:
-            from utils.config_manager import config
+            from utils.config_manager import get_config
             from utils.i18n_manager import i18n
             
             # Load saved language setting
-            saved_language = config.get_language_setting()
-            
-            if saved_language and saved_language != "auto":
-                # Set specific language
-                i18n.set_language(saved_language)
-                logging.info(f"Language set to: {saved_language}")
-                # Set Qt translator for system dialogs
-                self._set_qt_translator(saved_language)
+            config = get_config()
+            if config:  # Check if config is not None
+                saved_language = config.get_language_setting()
+                
+                if saved_language and saved_language != "auto":
+                    # Set specific language
+                    i18n.set_language(saved_language)
+                    logging.info(f"Language set to: {saved_language}")
+                    # Set Qt translator for system dialogs
+                    self._set_qt_translator(saved_language)
+                else:
+                    # Use auto-detected language (already done in i18n manager constructor)
+                    current_lang = i18n.get_current_language()
+                    logging.info(f"Auto-detected language: {current_lang}")
+                    # Set Qt translator for system dialogs
+                    self._set_qt_translator(current_lang)
             else:
-                # Use auto-detected language (already done in i18n manager constructor)
+                # Fallback to auto-detected language
+                from utils.i18n_manager import i18n
                 current_lang = i18n.get_current_language()
-                logging.info(f"Auto-detected language: {current_lang}")
-                # Set Qt translator for system dialogs
+                logging.info(f"Config not available, using auto-detected language: {current_lang}")
                 self._set_qt_translator(current_lang)
                 
         except Exception as e:
@@ -427,6 +441,13 @@ class Application:
     def run(self):
         """Run application"""
         try:
+            # Initialize app directories first
+            logging.info("Initializing application directories...")
+            app_dirs = initialize_app_directories()
+            logging.info(f"App directories initialized:")
+            for dir_type, dir_path in app_dirs.items():
+                logging.info(f"  {dir_type}: {dir_path}")
+            
             # Setup logging
             self.setup_logging()
             logging.info("Starting application...")
@@ -444,6 +465,7 @@ class Application:
                 return 1
             
             # Initialize template manager
+            template_manager = get_template_manager()
             template_manager.create_default_template()
             
             # Create main window
@@ -461,7 +483,9 @@ class Application:
             return app.exec()
             
         except Exception as e:
+            import traceback
             logging.error(f"Application startup failed: {e}")
+            logging.error(f"Traceback: {traceback.format_exc()}")
             
             # Show error message
             try:
@@ -470,6 +494,7 @@ class Application:
                                    t("dialogs.startup_error.message", error=str(e)))
             except:
                 print(f"Startup error: {e}")
+                print(f"Traceback: {traceback.format_exc()}")
             
             return 1
 

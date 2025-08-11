@@ -4,14 +4,16 @@ import os
 import shutil
 from pathlib import Path
 from typing import Any, Dict, Optional
+from .platform_paths import get_app_dirs
 
 class ConfigManager:
     """Configuration manager for saving and loading user preferences"""
     
     def __init__(self, config_dir: Optional[Path] = None):
         if config_dir is None:
-            # Default config directory in project root config folder
-            self.config_dir = Path(__file__).parent.parent.parent / "config"
+            # Use platform-appropriate config directory
+            app_dirs = get_app_dirs()
+            self.config_dir = app_dirs['config']
         else:
             self.config_dir = Path(config_dir)
         
@@ -237,5 +239,23 @@ class ConfigManager:
         """Set language setting"""
         self.set("ui.language", language)
 
-# Global config manager instance
-config = ConfigManager()
+# Global config manager instance  
+# 延迟初始化，避免在模块导入时就创建目录
+_config_instance = None
+
+def get_config() -> ConfigManager:
+    """获取配置管理器单例"""
+    global _config_instance
+    if _config_instance is None:
+        try:
+            _config_instance = ConfigManager()
+        except Exception as e:
+            print(f"Failed to initialize config manager: {e}")
+            # Return a temporary config manager with default settings
+            import tempfile
+            temp_dir = Path(tempfile.gettempdir()) / "md2docx_temp"
+            _config_instance = ConfigManager(temp_dir)
+    return _config_instance
+
+# 向后兼容的全局实例
+config = None  # 将在首次调用 get_config() 时初始化
