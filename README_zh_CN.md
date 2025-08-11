@@ -3,6 +3,8 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PySide6](https://img.shields.io/badge/GUI-PySide6-green.svg)](https://pypi.org/project/PySide6/)
+[![构建状态](https://github.com/davidjia1972/md2docx/workflows/Cross-Platform%20Build%20and%20Release/badge.svg)](https://github.com/davidjia1972/md2docx/actions)
+[![GitHub 发布版本](https://img.shields.io/github/v/release/davidjia1972/md2docx)](https://github.com/davidjia1972/md2docx/releases)
 
 > [English](README.md) | **简体中文**
 
@@ -37,16 +39,25 @@
 
 ## 📋 系统要求
 
+### 预编译版本
+- **Pandoc** - 文档转换引擎（需要单独安装）
+- **现代操作系统**：
+  - macOS 10.15+（支持 Intel 和 Apple Silicon）
+  - Windows 10+（x64 架构）
+  - Linux：现代发行版（Ubuntu 20.04+, Debian 11+, Fedora 35+ 等）
+
+### 源码运行
 - **Python 3.8+** - 核心运行环境
 - **PySide6** - GUI 框架（通过 requirements.txt 安装）
-- **Pandoc** - 文档转换引擎（需要单独安装）
 - **emoji** - 表情处理库（通过 requirements.txt 安装）
+
+**较老 Linux 系统说明**：如果 AppImage 在您的系统上无法运行，可以通过安装依赖后使用 `python src/main.py` 直接运行源码。
 
 ## 🚀 快速开始
 
 ### 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/md2docx.git
+git clone https://github.com/davidjia1972/md2docx.git
 cd md2docx
 ```
 
@@ -278,7 +289,7 @@ python check_icons.py
 
 如果遇到任何问题或有疑问：
 
-1. 查看 [Issues](https://github.com/yourusername/md2docx/issues) 页面
+1. 查看 [Issues](https://github.com/davidjia1972/md2docx/issues) 页面
 2. 查阅本 README 的故障排除部分
 3. 检查 `logs/converter.log` 中的应用程序日志
 4. 创建新的 issue 并提供详细的问题信息

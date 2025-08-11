@@ -3,6 +3,8 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PySide6](https://img.shields.io/badge/GUI-PySide6-green.svg)](https://pypi.org/project/PySide6/)
+[![Build Status](https://github.com/davidjia1972/md2docx/workflows/Cross-Platform%20Build%20and%20Release/badge.svg)](https://github.com/davidjia1972/md2docx/actions)
+[![GitHub release](https://img.shields.io/github/v/release/davidjia1972/md2docx)](https://github.com/davidjia1972/md2docx/releases)
 
 > **English** | [简体中文](README_zh_CN.md)
 
@@ -37,16 +39,25 @@ A modern, user-friendly GUI application for converting Markdown files to DOCX do
 
 ## 📋 Requirements
 
+### For Pre-built Releases
+- **Pandoc** - Document conversion engine (must be installed separately)
+- **Modern Operating System**:
+  - macOS 10.15+ (Intel & Apple Silicon)
+  - Windows 10+ (x64)
+  - Linux: Modern distributions (Ubuntu 20.04+, Debian 11+, Fedora 35+)
+
+### For Running from Source  
 - **Python 3.8+** - Core runtime
 - **PySide6** - GUI framework (installed via requirements.txt)
-- **Pandoc** - Document conversion engine (must be installed separately)
 - **emoji** - Emoji processing library (installed via requirements.txt)
+
+**Note for Older Linux Systems**: If the AppImage doesn't work on your system, you can always run from source using `python src/main.py` after installing dependencies.
 
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/md2docx.git
+git clone https://github.com/davidjia1972/md2docx.git
 cd md2docx
 ```
 
@@ -278,7 +289,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 
 If you encounter any problems or have questions:
 
-1. Check the [Issues](https://github.com/yourusername/md2docx/issues) page
+1. Check the [Issues](https://github.com/davidjia1972/md2docx/issues) page
 2. Review the troubleshooting section in this README
 3. Check application logs in `logs/converter.log`
 4. Create a new issue with detailed information about your problem
