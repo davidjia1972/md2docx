@@ -404,6 +404,11 @@ class I18nManager(QObject):
     
     def print_translation_report(self):
         """打印翻译报告"""
+        # Only print in debug mode
+        import os
+        if not os.environ.get('DEBUG', '').lower() in ['1', 'true', 'yes']:
+            return
+            
         stats = self.get_translation_stats()
         
         print(f"\n=== 翻译使用报告 (语言: {stats['current_language']}) ===")

@@ -10,9 +10,10 @@
       "select_folder": "Select Folder"
     },
     "buttons": {
-      "start": "Start",
+      "start": "Start Conversion",
       "cancel": "Cancel",
       "browse": "Browse...",
+      "clear_list": "Clear List",
       "ok": "OK",
       "yes": "Yes",
       "no": "No"
@@ -102,6 +103,14 @@
     "select_files_first": {
       "title": "Notice",
       "message": "Please select Markdown files to convert first"
+    },
+    "clear_list_confirm": {
+      "title": "Confirm Clear",
+      "message": "Are you sure you want to clear all files from the list?"
+    },
+    "no_files_to_convert": {
+      "title": "No Files to Convert",
+      "message": "All files have been converted successfully, no conversion needed."
     },
     "install_pandoc_first": {
       "title": "Pandoc Not Installed",

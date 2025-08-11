@@ -10,12 +10,13 @@
       "select_folder": "Sélectionner un dossier"
     },
     "buttons": {
-      "start": "Démarrer",
+      "start": "Commencer la conversion",
       "cancel": "Annuler",
       "browse": "Parcourir...",
       "ok": "OK",
       "yes": "Oui",
-      "no": "Non"
+      "no": "Non",
+      "clear_list": "Effacer la liste"
     },
     "labels": {
       "files_to_convert": "📋 Fichiers à convertir",
@@ -120,6 +121,10 @@
       "summary": "Résultats de la conversion:\n\nRéussi: {successful} fichiers\nÉchec: {failed} fichiers",
       "failed_files_header": "Fichiers en échec:",
       "more_files": "... et {count} autres fichiers"
+    },
+    "clear_list_confirm": {
+      "title": "Confirmer l'effacement",
+      "message": "Êtes-vous sûr de vouloir effacer tous les fichiers de la liste?"
     }
   },
   "templates": {

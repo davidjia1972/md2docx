@@ -10,9 +10,10 @@
       "select_folder": "选择文件夹"
     },
     "buttons": {
-      "start": "开始",
+      "start": "开始转换",
       "cancel": "取消",
       "browse": "浏览...",
+      "clear_list": "清除列表",
       "ok": "确定",
       "yes": "是",
       "no": "否"
@@ -102,6 +103,14 @@
     "select_files_first": {
       "title": "提示",
       "message": "请先选择要转换的 Markdown 文件"
+    },
+    "clear_list_confirm": {
+      "title": "确认清除",
+      "message": "您确定要清除列表中的所有文件吗？"
+    },
+    "no_files_to_convert": {
+      "title": "无需转换",
+      "message": "所有文件都已转换完成，无需再次转换。"
     },
     "install_pandoc_first": {
       "title": "Pandoc 未安装",

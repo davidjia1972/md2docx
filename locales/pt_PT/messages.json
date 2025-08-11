@@ -10,12 +10,13 @@
       "select_folder": "Selecionar pasta"
     },
     "buttons": {
-      "start": "Iniciar",
+      "start": "Iniciar conversão",
       "cancel": "Cancelar",
       "browse": "Procurar...",
       "ok": "OK",
       "yes": "Sim",
-      "no": "Não"
+      "no": "Não",
+      "clear_list": "Limpar lista"
     },
     "labels": {
       "files_to_convert": "📋 Ficheiros para converter",
@@ -120,6 +121,10 @@
       "summary": "Resultados da conversão:\n\nSucesso: {successful} arquivos\nFalha: {failed} arquivos",
       "failed_files_header": "Arquivos falhados:",
       "more_files": "... e mais {count} arquivos"
+    },
+    "clear_list_confirm": {
+      "title": "Confirmar limpeza",
+      "message": "Tem certeza de que deseja limpar todos os arquivos da lista?"
     }
   },
   "templates": {

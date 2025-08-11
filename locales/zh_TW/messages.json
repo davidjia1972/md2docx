@@ -10,9 +10,10 @@
       "select_folder": "選擇資料夾"
     },
     "buttons": {
-      "start": "開始",
+      "start": "開始轉換",
       "cancel": "取消",
       "browse": "瀏覽...",
+      "clear_list": "清除列表",
       "ok": "確定",
       "yes": "是",
       "no": "否"
@@ -102,6 +103,10 @@
     "select_files_first": {
       "title": "提示",
       "message": "請先選擇要轉換的 Markdown 檔案"
+    },
+    "clear_list_confirm": {
+      "title": "確認清除",
+      "message": "您確定要清除列表中的所有檔案嗎？"
     },
     "install_pandoc_first": {
       "title": "Pandoc 未安裝",
