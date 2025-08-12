@@ -19,6 +19,10 @@ project_root = Path(__file__).parent.parent.parent
 src_dir = project_root / "src"
 packaging_dir = Path(__file__).parent
 
+print(f"Project root: {project_root}")
+print(f"Source directory: {src_dir}")
+print(f"Packaging directory: {packaging_dir}")
+
 # Build configuration
 def build_windows_app():
     """Build Windows executable with PyInstaller"""
@@ -33,7 +37,8 @@ def build_windows_app():
         # 确保版本号不为空
         if not version:
             version = "1.0.0"
-
+    
+    print(f"Building version: {version}")
     
     # PyInstaller arguments
     args = [
@@ -93,9 +98,29 @@ def build_windows_app():
     print(f"Arguments: {' '.join(args)}")
     
     # Run PyInstaller
-    PyInstaller.__main__.run(args)
-    
-    print("✅ Build completed!")
+    try:
+        PyInstaller.__main__.run(args)
+        print("✅ Build completed!")
+        
+        # Check if output was created
+        expected_output = packaging_dir / "dist" / app_name / f"{app_name}.exe"
+        if expected_output.exists():
+            print(f"✅ Executable created: {expected_output}")
+        else:
+            print(f"❌ Executable not found at expected location: {expected_output}")
+            print("Contents of dist directory:")
+            dist_dir = packaging_dir / "dist"
+            if dist_dir.exists():
+                for item in dist_dir.rglob("*"):
+                    print(f"  {item}")
+            else:
+                print("  dist directory does not exist")
+            sys.exit(1)
+    except Exception as e:
+        print(f"❌ Build failed with error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 
 def create_version_info(version):
@@ -147,10 +172,11 @@ VSVersionInfo(
 )
 """
     
-    with open(packaging_dir / "version_info.txt", "w", encoding="utf-8") as f:
+    version_info_path = packaging_dir / "version_info.txt"
+    with open(version_info_path, "w", encoding="utf-8") as f:
         f.write(version_info_content)
     
-    print("Created version_info.txt")
+    print(f"Created version_info.txt at {version_info_path}")
 
 
 if __name__ == "__main__":
@@ -160,5 +186,7 @@ if __name__ == "__main__":
     
     # Add src to Python path
     sys.path.insert(0, str(src_dir))
+    
+    print(f"Working directory changed to: {os.getcwd()}")
     
     build_windows_app()

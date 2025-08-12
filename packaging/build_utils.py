@@ -82,6 +82,12 @@ def copy_to_releases(source_path, platform_name, version=None):
     source_path = str(source_path).replace('/', os.sep).replace('\\', os.sep)
     source = Path(source_path)
     
+    print(f"Attempting to copy {source_path} to releases directory for {platform_name}")
+    print(f"Source path: {source_path}")
+    print(f"Source object: {source}")
+    print(f"Source exists: {source.exists()}")
+    print(f"Source is dir: {source.is_dir()}")
+    
     if not source.exists():
         print(f"Warning: Source path does not exist: {source}")
         return None
@@ -120,24 +126,32 @@ def copy_to_releases(source_path, platform_name, version=None):
         
         if source.is_dir():
             # 先复制目录
+            print(f"Copying directory tree from {source} to {dest_dir}")
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
+            print(f"Directory tree copied successfully")
+            
             # 创建 ZIP 文件
             zip_base_name = str(dest_zip.with_suffix(''))
             print(f"Creating zip archive with base name: {zip_base_name}")
             try:
                 # 使用正确的参数创建ZIP文件
+                print(f"Making archive with root_dir={dest_dir.parent}, base_dir={dest_dir.name}")
                 result = shutil.make_archive(zip_base_name, 'zip', root_dir=dest_dir.parent, base_dir=dest_dir.name)
                 print(f"Created zip archive: {result}")
                 
                 # 删除临时目录
                 if dest_dir.exists():
+                    print(f"Removing temporary directory: {dest_dir}")
                     shutil.rmtree(dest_dir)
                     print(f"Removed temporary directory: {dest_dir}")
             except Exception as e:
                 print(f"Failed to create zip archive: {e}")
+                import traceback
+                traceback.print_exc()
                 # 即使创建ZIP失败，也保留目录
                 raise
         else:
+            print(f"Source is not a directory, copying as file: {source} to {dest_dir}")
             shutil.copy2(source, dest_dir)
     
     elif platform_name == 'linux':

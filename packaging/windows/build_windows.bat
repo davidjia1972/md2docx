@@ -91,12 +91,26 @@ REM Build the executable
 echo Building Windows executable with PyInstaller...
 python setup_pyinstaller.py
 if %ERRORLEVEL% neq 0 (
-    echo Error: Build failed
+    echo Error: Build failed with error level %ERRORLEVEL%
+    echo Current directory: %cd%
     echo Contents of packaging directory after failed build:
     dir
+    echo Contents of build directory if exists:
+    if exist build dir build
+    echo Contents of dist directory if exists:
+    if exist dist dir dist
+    echo Python path:
+    python -c "import sys; print(sys.path)"
+    echo Python executable:
+    where python
     pause
     exit /b 1
 )
+
+echo Build completed successfully, checking for output...
+echo Current directory: %cd%
+echo Contents of packaging directory after build:
+dir
 
 REM Check if build was successful
 set "EXE_PATH=%PACKAGING_DIR%\dist\md2docx\md2docx.exe"
@@ -149,7 +163,8 @@ if exist "%EXE_PATH%" (
     echo.
     
 ) else (
-    echo ❌ Build failed!
+    echo ❌ Build failed - executable not found!
+    echo Expected executable at: %EXE_PATH%
     echo Check the build log above for errors
     echo Contents of dist directory:
     if exist "%PACKAGING_DIR%\dist" (

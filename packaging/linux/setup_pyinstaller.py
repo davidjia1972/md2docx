@@ -114,7 +114,6 @@ Type=Application
 Categories=Office;WordProcessor;
 MimeType=text/markdown;text/x-markdown;
 StartupNotify=true
-Version={version}
 """
     
     with open(desktop_file, "w", encoding="utf-8") as f:
