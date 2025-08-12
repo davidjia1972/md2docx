@@ -100,14 +100,14 @@ def build_windows_app():
     # Run PyInstaller
     try:
         PyInstaller.__main__.run(args)
-        print("✅ Build completed!")
+        print("Build completed!")
         
         # Check if output was created
         expected_output = packaging_dir / "dist" / app_name / f"{app_name}.exe"
         if expected_output.exists():
-            print(f"✅ Executable created: {expected_output}")
+            print(f"Executable created: {expected_output}")
         else:
-            print(f"❌ Executable not found at expected location: {expected_output}")
+            print(f"Executable not found at expected location: {expected_output}")
             print("Contents of dist directory:")
             dist_dir = packaging_dir / "dist"
             if dist_dir.exists():
@@ -117,7 +117,7 @@ def build_windows_app():
                 print("  dist directory does not exist")
             sys.exit(1)
     except Exception as e:
-        print(f"❌ Build failed with error: {e}")
+        print(f"Build failed with error: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
