@@ -100,20 +100,27 @@ def copy_to_releases(source_path, platform_name, version=None):
     if platform_name == 'macos':
         if source.suffix == '.dmg':
             # 直接复制 DMG 文件
-            dest_path = releases_dir / f"{release_name}.dmg"
+            dest_path = releases_dir / f"{release_name}-{platform.machine()}.dmg"
             shutil.copy2(source, dest_path)
+            print(f"Copied DMG file to: {dest_path}")
         elif source.suffix == '.app' or source.name.endswith('.app'):
-            # 为 .app 创建 DMG (需要额外工具)
-            dest_path = releases_dir / f"{release_name}.dmg"
-            print(f"Note: {source} copied. Create DMG manually if needed.")
-            return source  # 返回原路径，由调用者处理
-        else:
-            # 复制整个应用目录
-            dest_path = releases_dir / release_name
+            # 复制 .app 目录
+            dest_path = releases_dir / f"{release_name}-{platform.machine()}.app"
+            print(f"Copying .app directory to: {dest_path}")
             if source.is_dir():
                 shutil.copytree(source, dest_path, dirs_exist_ok=True)
             else:
                 shutil.copy2(source, dest_path)
+            print(f"Copied .app directory to: {dest_path}")
+        else:
+            # 复制整个应用目录
+            dest_path = releases_dir / f"{release_name}-{platform.machine()}"
+            if source.is_dir():
+                shutil.copytree(source, dest_path, dirs_exist_ok=True)
+            else:
+                shutil.copy2(source, dest_path)
+            print(f"Copied directory to: {dest_path}")
+        return releases_dir
     
     elif platform_name == 'windows':
         # Windows: 复制整个目录并压缩为 ZIP

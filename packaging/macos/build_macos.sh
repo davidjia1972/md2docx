@@ -138,13 +138,13 @@ if [ -n "$APP_PATH" ] && [ -d "$APP_PATH" ]; then
     echo -e "${YELLOW}Copying to releases directory...${NC}"
     python3 -c "
 import sys
-sys.path.append('$PROJECT_ROOT/packaging')
+import os
+sys.path.insert(0, os.path.join('$PROJECT_ROOT', 'packaging'))
 from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink
 
 # Copy DMG if exists, otherwise copy .app
 dmg_path = '$DIST_DIR/$DMG_NAME'
 
-import os
 if os.path.exists(dmg_path):
     releases_dir = copy_to_releases(dmg_path, 'macos')
 else:
