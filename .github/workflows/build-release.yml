@@ -44,7 +44,7 @@ jobs:
           # Windows - 构建 Windows 版本  
           - os: windows-latest
             platform: windows
-            build_script: packaging/windows/build_windows.bat
+            build_script: packaging\windows\build_windows.bat
             artifact_pattern: "releases/v*/md2docx-v*-Windows.*"
             
           # macOS Intel - 构建 macOS Intel 版本
