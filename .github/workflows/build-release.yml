@@ -154,7 +154,8 @@ jobs:
         
         # 执行构建脚本
         if [[ "${{ matrix.platform }}" == "windows" ]]; then
-          cmd.exe //c "${{ matrix.build_script }}"
+          # Windows平台使用cmd执行.bat文件
+          cmd.exe /c "${{ matrix.build_script }}"
         else
           bash ${{ matrix.build_script }}
         fi

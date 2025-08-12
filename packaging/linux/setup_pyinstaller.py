@@ -156,10 +156,12 @@ def create_appdir_structure(app_name, version):
     # Copy executable
     import shutil
     exe_src = Path("dist") / app_name / app_name
-    exe_dst = app_dir / "usr" / "bin" / app_name
+    # 确保目标目录存在
+    bin_dir = app_dir / "usr" / "bin"
+    bin_dir.mkdir(parents=True, exist_ok=True)
     
     if exe_src.exists():
-        shutil.copytree(Path("dist") / app_name, app_dir / "usr" / "bin", dirs_exist_ok=True)
+        shutil.copy2(exe_src, bin_dir / app_name)
     
     # Copy desktop file
     desktop_src = Path("dist") / f"{app_name}.desktop"
@@ -189,9 +191,14 @@ exec "./{app_name}" "$@"
     
     os.chmod(apprun_file, 0o755)
     
+    # 创建一个.symlinks文件来明确架构
+    symlink_file = app_dir / ".symlinks"
+    with open(symlink_file, "w") as f:
+        f.write("usr/bin/md2docx|md2docx\n")
+    
     print(f"Created AppDir: {app_dir}")
     print("To create AppImage, run:")
-    print(f"  appimagetool '{app_dir}' '{app_name}-{version}-x86_64.AppImage'")
+    print(f"  ARCH=x86_64 appimagetool '{app_dir}' '{app_name}-{version}-x86_64.AppImage'")
 
 
 if __name__ == "__main__":

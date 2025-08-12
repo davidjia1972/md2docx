@@ -29,7 +29,10 @@ VERSION = "1.0.0"
 version_file = project_root / "VERSION"
 if version_file.exists():
     with open(version_file, 'r') as f:
-        VERSION = f.read().strip()
+        version = f.read().strip()
+    # 确保版本号不为空
+    if version:
+        VERSION = version
 
 NAME = "md2docx"
 DISPLAY_NAME = "Markdown to Word"
@@ -110,11 +113,58 @@ OPTIONS = {
             'wx',
             # 排除Windows特定模块以避免在macOS上出现警告
             '_overlapped',
+            '_io._WindowsConsoleIO',
             # 排除PySide6中不适用于macOS的模块
             'PySide6.support.signature',
             'PySide6.support.signature.lib',
             'PySide6.support.signature.typing',
             'deploy_lib',
+            # 排除shiboken6相关警告模块
+            'shiboken6.support',
+            'shiboken6.support.signature',
+            'shiboken6.support.signature.lib',
+            # 排除其他可能导致警告的模块
+            '_manylinux',
+            '_typeshed',
+            '_typeshed.importlib',
+            '_typeshed.BytesPath',
+            '_typeshed.StrOrBytesPath',
+            '_typeshed.StrPath',
+            'android',
+            'jnius',
+            'pkg_resources.tests',
+            # 排除条件导入中可能引起问题的模块
+            'Foundation',  # macOS上由objc提供的模块
+            'objc',        # PyObjC相关模块
+            # 排除SSL相关特定平台模块
+            '_ssl.RAND_egd',
+            '_ssl.enum_certificates',
+            '_ssl.enum_crls',
+            # 排除CTypes特定平台模块
+            '_ctypes.FUNCFLAG_STDCALL',
+            '_ctypes.FormatError',
+            '_ctypes.LoadLibrary',
+            '_ctypes._check_HRESULT',
+            '_ctypes.get_last_error',
+            '_ctypes.set_last_error',
+            # 排除Android部署相关模块
+            'deploy_lib.DesktopConfig',
+            'deploy_lib.Nuitka',
+            'deploy_lib.android',
+            'deploy_lib.android.AndroidConfig',
+            'deploy_lib.android.AndroidData',
+            'deploy_lib.android.buildozer',
+            'deploy_lib.finalize',
+            # 排除其他不必要模块
+            'itertools.batched',
+            'jaraco.path',
+            'jinja2',
+            'multiprocessing.context.reduction',
+            'pkginfo',
+            'project_lib',
+            'pytest',
+            'qtpy2cpp_lib',
+            'tqdm',
         ],
         'resources': DATA_FILES,
         'optimize': 1,

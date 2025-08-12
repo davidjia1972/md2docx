@@ -157,7 +157,8 @@ EOF
     if command -v appimagetool &> /dev/null; then
         echo -e "${YELLOW}Creating AppImage...${NC}"
         if [ -d "$DIST_DIR/md2docx.AppDir" ]; then
-            appimagetool "$DIST_DIR/md2docx.AppDir" "$DIST_DIR/$APPIMAGE_NAME"
+            # 修复架构识别问题，显式指定ARCH环境变量
+            ARCH=x86_64 appimagetool "$DIST_DIR/md2docx.AppDir" "$DIST_DIR/$APPIMAGE_NAME"
             if [ -f "$DIST_DIR/$APPIMAGE_NAME" ]; then
                 chmod +x "$DIST_DIR/$APPIMAGE_NAME"
                 echo -e "${GREEN}✅ AppImage created: $DIST_DIR/$APPIMAGE_NAME${NC}"
