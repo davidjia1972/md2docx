@@ -162,7 +162,9 @@ def copy_to_releases(source_path, platform_name, version=None):
         if source.is_dir():
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
             # 创建 tar.gz 文件，修复文件名重复添加扩展名的问题
-            shutil.make_archive(str(dest_tar.with_suffix('')), 'gztar', dest_dir.parent, dest_dir.name)
+            # 使用 with_suffix('') 移除 .gz 后缀，让 shutil.make_archive 自动添加正确的扩展名
+            tar_base_name = str(dest_tar.with_suffix('').with_suffix(''))
+            shutil.make_archive(tar_base_name, 'gztar', dest_dir.parent, dest_dir.name)
             # 删除临时目录
             if dest_dir.exists():
                 shutil.rmtree(dest_dir)
