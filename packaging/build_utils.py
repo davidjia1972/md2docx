@@ -23,7 +23,10 @@ def get_version():
     """从 VERSION 文件读取版本号"""
     version_file = get_project_root() / "VERSION"
     if version_file.exists():
-        return version_file.read_text().strip()
+        version = version_file.read_text().strip()
+        # 确保版本号不为空
+        if version:
+            return version
     return "1.0.0"
 
 

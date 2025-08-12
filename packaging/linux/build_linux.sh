@@ -18,7 +18,7 @@ DIST_DIR="$PACKAGING_DIR/dist"
 BUILD_DIR="$PACKAGING_DIR/build"
 
 # Load version
-VERSION=$(cat "$PROJECT_ROOT/VERSION")
+VERSION=$(cat "$PROJECT_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
 echo "Project root: $PROJECT_ROOT"
 echo "Packaging dir: $PACKAGING_DIR"
 echo "Version: $VERSION"

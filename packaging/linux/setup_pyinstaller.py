@@ -23,6 +23,14 @@ def build_linux_app():
     
     app_name = "md2docx"
     version = "1.0.0"
+    # 从 VERSION 文件读取版本号
+    version_file = project_root / "VERSION"
+    if version_file.exists():
+        with open(version_file, 'r') as f:
+            version = f.read().strip()
+        # 确保版本号不为空
+        if not version:
+            version = "1.0.0"
     
     # PyInstaller arguments
     args = [
@@ -102,7 +110,6 @@ Categories=Office;WordProcessor;
 MimeType=text/markdown;text/x-markdown;
 StartupNotify=true
 StartupWMClass=md2docx
-Version={version}
 """
     
     desktop_file = Path("dist") / f"{app_name}.desktop"

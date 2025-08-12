@@ -18,6 +18,12 @@ APP = [str(project_root / "src" / "main.py")]
 
 # 基本信息
 VERSION = "1.0.0"
+# 从 VERSION 文件读取版本号
+version_file = project_root / "VERSION"
+if version_file.exists():
+    with open(version_file, 'r') as f:
+        VERSION = f.read().strip()
+
 NAME = "md2docx"
 DISPLAY_NAME = "Markdown to Word"
 
@@ -77,7 +83,14 @@ OPTIONS = {
         # 排除的包 - 减少应用大小
         'excludes': [
             'tkinter', 'matplotlib', 'numpy', 'scipy',
-            'PIL', 'wx', 'PyQt5', 'PyQt6'
+            'PIL', 'wx', 'PyQt5', 'PyQt6',
+            # 排除Windows特定模块以避免在macOS上出现警告
+            '_overlapped',
+            # 排除PySide6中不适用于macOS的模块
+            'PySide6.support.signature',
+            'PySide6.support.signature.lib',
+            'PySide6.support.signature.typing',
+            'deploy_lib',
         ],
         
         # 构建选项
@@ -85,6 +98,7 @@ OPTIONS = {
         'site_packages': True,
         'strip': False,  # 避免strip导致的问题
         'prefer_ppc': False,
+        'semi_standalone': True,  # 减少不必要的模块包含
     }
 }
 

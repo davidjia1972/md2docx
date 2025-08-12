@@ -6,10 +6,13 @@ echo 🪟 Building md2docx for Windows...
 REM Get current directory and load version
 set "CURRENT_DIR=%cd%"
 set "PROJECT_ROOT=%~dp0..\.."
-set "PACKAGING_DIR=%PROJECT_ROOT%\packaging\windows"
+set "PACKAGING_DIR=%~dp0"
+
+REM Change to the project root directory to ensure correct context
+cd /d "%PROJECT_ROOT%"
 
 REM Read version from VERSION file
-set /p VERSION=<%PROJECT_ROOT%\VERSION
+set /p VERSION=<VERSION
 
 echo Project root: %PROJECT_ROOT%
 echo Packaging dir: %PACKAGING_DIR%
@@ -30,7 +33,7 @@ echo Checking PyInstaller...
 python -c "import PyInstaller" 2>nul
 if %ERRORLEVEL% neq 0 (
     echo Installing PyInstaller...
-    pip install pyinstaller
+    python -m pip install pyinstaller
 )
 
 REM Check if pandoc is available
@@ -46,8 +49,7 @@ if %ERRORLEVEL% neq 0 (
 
 REM Install Python dependencies
 echo Installing Python dependencies...
-cd /d "%PROJECT_ROOT%"
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 if %ERRORLEVEL% neq 0 (
     echo Error: Failed to install dependencies
     pause

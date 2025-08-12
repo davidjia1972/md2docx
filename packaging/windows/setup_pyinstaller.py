@@ -24,6 +24,15 @@ def build_windows_app():
     
     app_name = "md2docx"
     version = "1.0.0"
+    # 从 VERSION 文件读取版本号
+    version_file = project_root / "VERSION"
+    if version_file.exists():
+        with open(version_file, 'r') as f:
+            version = f.read().strip()
+        # 确保版本号不为空
+        if not version:
+            version = "1.0.0"
+
     
     # PyInstaller arguments
     args = [
@@ -145,7 +154,8 @@ VSVersionInfo(
 
 if __name__ == "__main__":
     # Change to packaging directory
-    os.chdir(Path(__file__).parent)
+    script_dir = Path(__file__).parent.absolute()
+    os.chdir(script_dir)
     
     # Add src to Python path
     sys.path.insert(0, str(src_dir))
