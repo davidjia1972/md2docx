@@ -1,193 +1,130 @@
 @echo off
+setlocal enabledelayedexpansion
+
 REM Windows build script for md2docx
-
 echo 🪟 Building md2docx for Windows...
-echo Current directory: %cd%
-echo Script location: %~dp0
 
-REM Get current directory and load version
-set "CURRENT_DIR=%cd%"
-set "PROJECT_ROOT=%~dp0..\.."
-set "PACKAGING_DIR=%~dp0"
+REM Get script directory
+set "SCRIPT_DIR=%~dp0"
+if "!SCRIPT_DIR:~-1!"=="\" set "SCRIPT_DIR=!SCRIPT_DIR:~0,-1!"
 
-REM Remove trailing backslash for consistency
-if "%PROJECT_ROOT:~-1%"=="\" set "PROJECT_ROOT=%PROJECT_ROOT:~0,-1%"
-if "%PACKAGING_DIR:~-1%"=="\" set "PACKAGING_DIR=%PACKAGING_DIR:~0,-1%"
+REM Get project root directory (2 levels up from script dir)
+for %%i in ("!SCRIPT_DIR!\..\..") do set "PROJECT_ROOT=%%~fi"
+if "!PROJECT_ROOT:~-1!"=="\" set "PROJECT_ROOT=!PROJECT_ROOT:~0,-1!"
 
-echo Project root: %PROJECT_ROOT%
-echo Packaging dir: %PACKAGING_DIR%
+REM Get packaging directory
+for %%i in ("!SCRIPT_DIR!") do set "PACKAGING_DIR=%%~fi"
+if "!PACKAGING_DIR:~-1!"=="\" set "PACKAGING_DIR=!PACKAGING_DIR:~0,-1!"
 
-REM Change to the project root directory to ensure correct context
-cd /d "%PROJECT_ROOT%"
+echo Script directory: !SCRIPT_DIR!
+echo Project root: !PROJECT_ROOT!
+echo Packaging directory: !PACKAGING_DIR!
 
-REM Check if we're in the correct directory
-echo After cd, current directory: %cd%
-
-REM Read version from VERSION file
-if exist VERSION (
-    set /p VERSION=<VERSION
-    echo Version file exists, content: 
-    type VERSION
-) else (
-    echo Version file does not exist
-    set "VERSION=1.0.0"
+REM Change to project root directory
+cd /d "!PROJECT_ROOT!"
+if errorlevel 1 (
+    echo ❌ Failed to change to project root directory: !PROJECT_ROOT!
+    exit /b 1
 )
 
-echo Version: %VERSION%
+echo Current directory after cd: %cd%
 
-REM Check Python version
-echo Checking Python version...
-python --version
-if %ERRORLEVEL% neq 0 (
-    echo Error: Python not found
-    echo Please install Python 3.8 or higher from https://python.org
-    pause
+REM Read version from VERSION file
+set "VERSION=1.0.0"
+if exist VERSION (
+    set /p VERSION=<VERSION
+    if "!VERSION!"=="" set "VERSION=1.0.0"
+)
+echo Version: !VERSION!
+
+REM Check Python
+echo Checking Python...
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Python not found. Please install Python 3.8 or higher.
     exit /b 1
 )
 
 REM Check if PyInstaller is installed
 echo Checking PyInstaller...
-python -c "import PyInstaller" 2>nul
-if %ERRORLEVEL% neq 0 (
+python -c "import PyInstaller" >nul 2>&1
+if errorlevel 1 (
     echo Installing PyInstaller...
     pip install pyinstaller
-    if %ERRORLEVEL% neq 0 (
-        echo Error: Failed to install PyInstaller
-        pause
+    if errorlevel 1 (
+        echo ❌ Failed to install PyInstaller
         exit /b 1
     )
-)
-
-REM Check if pandoc is available
-where pandoc >nul 2>&1
-if %ERRORLEVEL% neq 0 (
-    echo Warning: pandoc not found
-    echo The app will show a warning about pandoc when started
-    echo Users need to install pandoc separately from https://pandoc.org
-) else (
-    echo Found pandoc
-    pandoc --version | findstr "pandoc"
 )
 
 REM Install Python dependencies
 echo Installing Python dependencies...
 pip install -r requirements.txt
-if %ERRORLEVEL% neq 0 (
-    echo Error: Failed to install dependencies
-    pause
+if errorlevel 1 (
+    echo ❌ Failed to install dependencies
     exit /b 1
 )
 
+REM Change to packaging directory
+cd /d "!PACKAGING_DIR!"
+if errorlevel 1 (
+    echo ❌ Failed to change to packaging directory: !PACKAGING_DIR!
+    exit /b 1
+)
+
+echo Current directory: %cd%
+
 REM Clean previous build
 echo Cleaning previous build...
-cd /d "%PACKAGING_DIR%"
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
-
-echo Contents of packaging directory before build:
-dir
 
 REM Build the executable
 echo Building Windows executable with PyInstaller...
 python setup_pyinstaller.py
-if %ERRORLEVEL% neq 0 (
-    echo Error: Build failed with error level %ERRORLEVEL%
-    echo Current directory: %cd%
-    echo Contents of packaging directory after failed build:
+if errorlevel 1 (
+    echo ❌ Build failed with error level !errorlevel!
+    echo Contents of current directory:
     dir
-    echo Contents of build directory if exists:
-    if exist build dir build
-    echo Contents of dist directory if exists:
-    if exist dist dir dist
-    echo Python path:
-    python -c "import sys; print(sys.path)"
-    echo Python executable:
-    where python
-    pause
+    if exist build (
+        echo Contents of build directory:
+        dir build
+    )
+    if exist dist (
+        echo Contents of dist directory:
+        dir dist
+    )
     exit /b 1
 )
 
-echo Build completed successfully, checking for output...
-echo Current directory: %cd%
-echo Contents of packaging directory after build:
-dir
+echo Build completed successfully!
 
-REM Check if build was successful
-set "EXE_PATH=%PACKAGING_DIR%\dist\md2docx\md2docx.exe"
-echo Checking for executable at: %EXE_PATH%
-if exist "%EXE_PATH%" (
+REM Check if executable was created
+set "EXE_PATH=!PACKAGING_DIR!\dist\md2docx\md2docx.exe"
+echo Checking for executable at: !EXE_PATH!
+if exist "!EXE_PATH!" (
     echo ✅ Build successful!
-    echo Executable created at: %EXE_PATH%
-    
-    REM Show executable info
-    for %%A in ("%PACKAGING_DIR%\dist\md2docx") do echo App size: %%~zA bytes
-    
-    REM Test if executable can launch (briefly)
-    echo Testing executable launch...
-    timeout /t 1 >nul
-    echo ✅ Executable ready for testing
+    echo Executable created at: !EXE_PATH!
     
     REM Copy to releases directory
     echo Copying to releases directory...
-    set "SOURCE_PATH=%PACKAGING_DIR%\dist\md2docx"
-    echo Source path for copy: %SOURCE_PATH%
-    
-    REM Check if source path exists before calling Python
-    if exist "%SOURCE_PATH%" (
-        echo Source path exists, proceeding with copy...
-        python -c "import sys; import os; sys.path.append('%PROJECT_ROOT%\packaging'); from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink; source_path = r'%SOURCE_PATH%'; print(f'Source path exists: {os.path.exists(source_path)}'); print(f'Source path is dir: {os.path.isdir(source_path)}'); print(f'Absolute path: {os.path.abspath(source_path)}'); releases_dir = copy_to_releases(source_path, 'windows'); print(f'Releases dir: {releases_dir}'); releases_dir and [calculate_checksums(releases_dir), update_release_notes(), create_latest_symlink(), print(f'✅ Release artifacts ready in: {releases_dir}')]"
-    ) else (
-        echo ❌ Source path does not exist: %SOURCE_PATH%
-        echo Contents of dist directory:
-        if exist "%PACKAGING_DIR%\dist" (
-            dir "%PACKAGING_DIR%\dist"
-        ) else (
-            echo Dist directory does not exist
-        )
-        echo Contents of packaging directory:
-        dir "%PACKAGING_DIR%"
+    python -c "import sys; sys.path.append('!PROJECT_ROOT!\packaging'); from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink; source_path = r'!PACKAGING_DIR!\dist\md2docx'; print(f'Source path: {source_path}'); releases_dir = copy_to_releases(source_path, 'windows', '!VERSION!'); print(f'Releases dir: {releases_dir}'); releases_dir and [calculate_checksums(releases_dir), update_release_notes('!VERSION!'), create_latest_symlink('!VERSION!'), print('✅ Release artifacts ready')]"
+    if errorlevel 1 (
+        echo ❌ Failed to copy to releases directory
         exit /b 1
     )
     
-    echo.
     echo 🎉 Windows build completed successfully!
-    echo.
-    echo Build artifacts:
-    echo   Executable: %EXE_PATH%
-    echo   Release files: releases\v%VERSION%\
-    echo.
-    echo Next steps:
-    echo 1. Test the app: "%EXE_PATH%"
-    echo 2. Install pandoc if needed: Download from https://pandoc.org
-    echo 3. For distribution, use the ZIP file in releases directory
-    echo.
-    
+    echo Build artifacts are in releases\v!VERSION!\
 ) else (
-    echo ❌ Build failed - executable not found!
-    echo Expected executable at: %EXE_PATH%
-    echo Check the build log above for errors
+    echo ❌ Build failed - executable not found at: !EXE_PATH!
     echo Contents of dist directory:
-    if exist "%PACKAGING_DIR%\dist" (
-        dir "%PACKAGING_DIR%\dist"
+    if exist dist (
+        dir dist
     ) else (
-        echo Dist directory does not exist
+        echo dist directory does not exist
     )
-    echo Contents of current directory:
-    dir
-    echo Contents of packaging directory:
-    dir "%PACKAGING_DIR%"
-    pause
     exit /b 1
-)
-
-echo Final contents of packaging directory:
-dir "%PACKAGING_DIR%"
-
-echo Final contents of dist directory:
-if exist "%PACKAGING_DIR%\dist" (
-    dir "%PACKAGING_DIR%\dist"
-) else (
-    echo Dist directory does not exist
 )
 
 pause

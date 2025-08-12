@@ -143,11 +143,10 @@ jobs:
         echo "${{ needs.prepare.outputs.version }}" > VERSION
         
     - name: Build application
-      shell: bash
       env:
         BUILD_ARCH: ${{ matrix.arch || '' }}
       run: |
-        # 设置执行权限
+        # 设置执行权限（非Windows平台）
         if [[ "${{ matrix.platform }}" != "windows" ]]; then
           chmod +x ${{ matrix.build_script }}
         fi
