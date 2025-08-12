@@ -29,41 +29,8 @@ env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  # 预处理作业 - 获取版本信息
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
-      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Extract version information
-      id: version
-      run: |
-        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-          VERSION="${{ github.event.inputs.version }}"
-        else
-          VERSION=${GITHUB_REF#refs/tags/v}
-        fi
-        
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        
-        # 判断是否为预发布版本
-        if [[ "$VERSION" =~ (alpha|beta|rc|dev) ]]; then
-          echo "is_prerelease=true" >> $GITHUB_OUTPUT
-        else
-          echo "is_prerelease=false" >> $GITHUB_OUTPUT
-        fi
-        
-        echo "🔖 Version: $VERSION"
-        echo "🚀 Is prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') || contains(github.ref, 'dev') }}"
-
   # 跨平台构建作业
   build:
-    needs: prepare
     strategy:
       fail-fast: false  # 一个平台失败不影响其他平台
       matrix:
@@ -138,40 +105,41 @@ jobs:
         brew install pandoc create-dmg
         pip install py2app
         
-    - name: Update VERSION file
-      run: |
-        echo "${{ needs.prepare.outputs.version }}" > VERSION
-        
     - name: Build application
       env:
         BUILD_ARCH: ${{ matrix.arch || '' }}
       run: |
-        # 执行构建脚本
-        if [ "${{ matrix.platform }}" = "windows" ]; then
-          # Windows平台使用cmd执行.bat文件
-          cmd.exe /c "${{ matrix.build_script }}"
-        else
-          # 非Windows平台设置执行权限并执行脚本
-          chmod +x ${{ matrix.build_script }}
-          ${{ matrix.build_script }}
-        fi
+        # 为不同平台使用不同的执行方式
+        case ${{ matrix.platform }} in
+          windows)
+            # Windows平台使用cmd执行.bat文件
+            cmd.exe /c "${{ matrix.build_script }}"
+            ;;
+          *)
+            # 非Windows平台设置执行权限并执行脚本
+            chmod +x ${{ matrix.build_script }}
+            ${{ matrix.build_script }}
+            ;;
+        esac
         
     - name: Verify build artifacts
       shell: bash
       run: |
-        echo "🔍 Checking build artifacts..."
-        ls -la releases/v${{ needs.prepare.outputs.version }}/ || true
+        # 从项目根目录的VERSION文件读取版本号
+        VERSION=$(cat VERSION)
+        echo "🔍 Checking build artifacts for version $VERSION..."
+        ls -la releases/v$VERSION/ || true
         
         # 验证关键文件存在
         if [[ "${{ matrix.platform }}" == "linux" ]]; then
           # 检查Linux tar.gz文件或目录
-          if ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz 1> /dev/null 2>&1; then
+          if ls releases/v$VERSION/md2docx-v$VERSION-Linux.tar.gz 1> /dev/null 2>&1; then
             echo "✅ Found Linux tar.gz file"
-          elif ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Linux/ 1> /dev/null 2>&1; then
+          elif ls releases/v$VERSION/md2docx-v$VERSION-Linux/ 1> /dev/null 2>&1; then
             echo "✅ Found Linux directory"
           else
             echo "❌ Linux build artifacts not found, checking what files exist..."
-            ls -la releases/v${{ needs.prepare.outputs.version }}/ 2>/dev/null || echo "Release directory does not exist or is empty"
+            ls -la releases/v$VERSION/ 2>/dev/null || echo "Release directory does not exist or is empty"
             echo "Contents of entire releases directory:"
             find releases/ -type f 2>/dev/null || echo "No files found in releases directory"
             echo "Checking if dist directory exists:"
@@ -186,13 +154,13 @@ jobs:
         elif [[ "${{ matrix.platform }}" == "windows" ]]; then
           # 增强Windows验证逻辑，提供更多调试信息
           echo "Checking for Windows ZIP file..."
-          if ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip 1> /dev/null 2>&1; then
+          if ls releases/v$VERSION/md2docx-v$VERSION-Windows.zip 1> /dev/null 2>&1; then
             echo "✅ Found Windows ZIP file"
-          elif ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Windows/ 1> /dev/null 2>&1; then
+          elif ls releases/v$VERSION/md2docx-v$VERSION-Windows/ 1> /dev/null 2>&1; then
             echo "✅ Found Windows directory"
           else
             echo "❌ Windows build artifacts not found, checking what files exist..."
-            ls -la releases/v${{ needs.prepare.outputs.version }}/ 2>/dev/null || echo "Release directory does not exist or is empty"
+            ls -la releases/v$VERSION/ 2>/dev/null || echo "Release directory does not exist or is empty"
             echo "Contents of entire releases directory:"
             find releases/ -type f 2>/dev/null || echo "No files found in releases directory"
             echo "Checking if dist directory exists:"
@@ -206,11 +174,11 @@ jobs:
           fi
         elif [[ "${{ matrix.platform }}" == "macos" ]]; then
           if [[ -n "${{ matrix.arch }}" ]]; then
-            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS-${{ matrix.arch }}.dmg || \
-            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS-${{ matrix.arch }}/
+            ls releases/v$VERSION/md2docx-v$VERSION-macOS-${{ matrix.arch }}.dmg || \
+            ls releases/v$VERSION/md2docx-v$VERSION-macOS-${{ matrix.arch }}/
           else
-            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS.dmg || \
-            ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-macOS/
+            ls releases/v$VERSION/md2docx-v$VERSION-macOS.dmg || \
+            ls releases/v$VERSION/md2docx-v$VERSION-macOS/
           fi
         fi
         
@@ -226,12 +194,12 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform }}${{ matrix.arch && format('-{0}', matrix.arch) || '' }}-checksums
-        path: releases/v${{ needs.prepare.outputs.version }}/checksums.txt
+        path: releases/v*/checksums.txt
         if-no-files-found: warn
 
   # 发布作业 - 收集所有构建产物并创建 Release
   release:
-    needs: [prepare, build]
+    needs: build
     if: ${{ !inputs.skip_release }}
     runs-on: ubuntu-latest
     
@@ -255,7 +223,7 @@ jobs:
         find ./artifacts -name "md2docx-v*.*" -type f -exec cp {} ./release-files/ \;
         
         # 合并校验和文件
-        echo "# SHA256 Checksums - md2docx v${{ needs.prepare.outputs.version }}" > ./release-files/checksums.txt
+        echo "# SHA256 Checksums - md2docx" > ./release-files/checksums.txt
         echo "# Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ./release-files/checksums.txt
         echo "" >> ./release-files/checksums.txt
         
@@ -266,8 +234,10 @@ jobs:
         
     - name: Generate release notes
       run: |
+        # 从项目根目录的VERSION文件读取版本号
+        VERSION=$(cat VERSION)
         cat > ./release-notes.md << 'EOF'
-        # md2docx v${{ needs.prepare.outputs.version }}
+        # md2docx v'"$VERSION"'
         
         🎉 跨平台 Markdown 到 Word 文档转换工具新版本发布！
         
@@ -275,11 +245,11 @@ jobs:
         
         | 平台 | 文件 | 说明 |
         |------|------|------|
-        | 🍎 **macOS Intel** | `md2docx-v${{ needs.prepare.outputs.version }}-macOS-x86_64.dmg` | Intel Mac (macOS 10.15+) |
-        | 🍎 **macOS Apple Silicon** | `md2docx-v${{ needs.prepare.outputs.version }}-macOS-arm64.dmg` | Apple Silicon Mac (macOS 11.0+) |
-        | 🪟 **Windows** | `md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip` | Windows 10+ |
-        | 🐧 **Linux** | `md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz` | 大部分发行版 |
-        | 🐧 **Linux** | `md2docx-v${{ needs.prepare.outputs.version }}-x86_64.AppImage` | 便携版本 |
+        | 🍎 **macOS Intel** | `md2docx-v'"$VERSION"'-macOS-x86_64.dmg` | Intel Mac (macOS 10.15+) |
+        | 🍎 **macOS Apple Silicon** | `md2docx-v'"$VERSION"'-macOS-arm64.dmg` | Apple Silicon Mac (macOS 11.0+) |
+        | 🪟 **Windows** | `md2docx-v'"$VERSION"'-Windows.zip` | Windows 10+ |
+        | 🐧 **Linux** | `md2docx-v'"$VERSION"'-Linux.tar.gz` | 大部分发行版 |
+        | 🐧 **Linux** | `md2docx-v'"$VERSION"'-x86_64.AppImage` | 便携版本 |
         
         ### 🔍 如何选择 macOS 版本？
         
@@ -315,26 +285,28 @@ jobs:
         
         🤖 此版本通过 GitHub Actions 自动构建
         📅 构建时间: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        🔗 完整更新日志: [查看提交记录](https://github.com/${{ github.repository }}/commits/v${{ needs.prepare.outputs.version }})
+        🔗 完整更新日志: [查看提交记录](https://github.com/${{ github.repository }}/commits/v'"$VERSION"')
         EOF
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ needs.prepare.outputs.version }}
-        name: "md2docx v${{ needs.prepare.outputs.version }}"
+        tag_name: v${{ github.ref_name }}
+        name: "md2docx v${{ github.ref_name }}"
         body_path: ./release-notes.md
         files: ./release-files/*
-        prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
+        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') || contains(github.ref, 'dev') }}
         generate_release_notes: true
-        make_latest: ${{ needs.prepare.outputs.is_prerelease == 'false' }}
+        make_latest: ${{ !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') && !contains(github.ref, 'rc') && !contains(github.ref, 'dev') }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Release summary
       run: |
-        echo "🎉 Release v${{ needs.prepare.outputs.version }} created successfully!"
-        echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.version }}"
+        # 从项目根目录的VERSION文件读取版本号
+        VERSION=$(cat VERSION)
+        echo "🎉 Release v$VERSION created successfully!"
+        echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
         echo ""
         echo "📦 Files released:"
         ls -la ./release-files/
