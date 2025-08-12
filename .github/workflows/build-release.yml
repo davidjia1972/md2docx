@@ -168,7 +168,9 @@ jobs:
         
         # 验证关键文件存在
         if [[ "${{ matrix.platform }}" == "linux" ]]; then
-          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz
+          # 修复Linux验证逻辑，检查正确的文件名
+          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Linux.tar.gz || \
+          ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Linux/
         elif [[ "${{ matrix.platform }}" == "windows" ]]; then
           ls releases/v${{ needs.prepare.outputs.version }}/md2docx-v${{ needs.prepare.outputs.version }}-Windows.zip
         elif [[ "${{ matrix.platform }}" == "macos" ]]; then

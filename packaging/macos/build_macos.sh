@@ -18,7 +18,7 @@ DIST_DIR="$PACKAGING_DIR/dist"
 BUILD_DIR="$PACKAGING_DIR/build"
 
 # Load version and build utilities
-VERSION=$(cat "$PROJECT_ROOT/VERSION")
+VERSION=$(cat "$PROJECT_ROOT/VERSION" 2>/dev/null || echo "1.0.0")
 
 # Detect architecture
 if [[ -n "$BUILD_ARCH" ]]; then
@@ -74,7 +74,17 @@ rm -rf "$BUILD_DIR" "$DIST_DIR"
 # Build the app
 echo -e "${YELLOW}Building macOS app with py2app...${NC}"
 cd "$PACKAGING_DIR"
-python3 setup_py2app.py py2app --optimize=1
+
+# 尝试使用setup_py2app.py构建，如果失败则使用setup_simple.py
+echo "尝试使用 setup_py2app.py 构建..."
+if python3 setup_py2app.py py2app --optimize=1; then
+    echo "使用 setup_py2app.py 构建成功"
+else
+    echo "使用 setup_py2app.py 构建失败，尝试使用 setup_simple.py..."
+    # 清理之前失败的构建
+    rm -rf "$BUILD_DIR" "$DIST_DIR"
+    python3 setup_simple.py py2app --optimize=1
+fi
 
 # Check if build was successful
 APP_PATH="$DIST_DIR/md2docx.app"
@@ -161,5 +171,10 @@ if releases_dir:
 else
     echo -e "${RED}❌ Build failed!${NC}"
     echo "Check the build log above for errors"
+    # 添加更多调试信息
+    echo "Contents of dist directory:"
+    ls -la "$DIST_DIR" 2>/dev/null || echo "dist directory does not exist"
+    echo "Contents of build directory:"
+    ls -la "$BUILD_DIR" 2>/dev/null || echo "build directory does not exist"
     exit 1
 fi

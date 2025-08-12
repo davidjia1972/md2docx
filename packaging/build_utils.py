@@ -110,7 +110,7 @@ def copy_to_releases(source_path, platform_name, version=None):
         
         if source.is_dir():
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
-            # 创建 ZIP 文件
+            # 创建 ZIP 文件，修复文件名重复添加扩展名的问题
             shutil.make_archive(str(dest_zip.with_suffix('')), 'zip', dest_dir)
             # 可选：删除临时目录
             # shutil.rmtree(dest_dir)
@@ -124,8 +124,8 @@ def copy_to_releases(source_path, platform_name, version=None):
         
         if source.is_dir():
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
-            # 创建 tar.gz 文件
-            shutil.make_archive(str(dest_tar.with_suffix('.tar')), 'gztar', dest_dir.parent, dest_dir.name)
+            # 创建 tar.gz 文件，修复文件名重复添加扩展名的问题
+            shutil.make_archive(str(dest_tar.with_suffix('')), 'gztar', dest_dir.parent, dest_dir.name)
             # 可选：删除临时目录
             # shutil.rmtree(dest_dir)
         else:
