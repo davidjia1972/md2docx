@@ -108,9 +108,17 @@ if exist "!EXE_PATH!" (
     
     REM Copy to releases directory
     echo Copying to releases directory...
-    python -c "import sys; sys.path.append('!PROJECT_ROOT!\packaging'); from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink; source_path = r'!PACKAGING_DIR!\dist\md2docx'; print(f'Source path: {source_path}'); releases_dir = copy_to_releases(source_path, 'windows', '!VERSION!'); print(f'Releases dir: {releases_dir}'); releases_dir and [calculate_checksums(releases_dir), update_release_notes('!VERSION!'), create_latest_symlink('!VERSION!'), print('✅ Release artifacts ready')]"
+    REM 使用完整的绝对路径，避免变量展开问题
+    set "PYTHONPATH_CMD=import sys; sys.path.insert(0, r'!PROJECT_ROOT!\packaging'); from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink; source_path = r'!PACKAGING_DIR!\dist\md2docx'; print(f'Source path: {source_path}'); releases_dir = copy_to_releases(source_path, 'windows', '!VERSION!'); print(f'Releases dir: {releases_dir}'); releases_dir and [calculate_checksums(releases_dir), update_release_notes('!VERSION!'), create_latest_symlink('!VERSION!'), print('Release artifacts ready')]"
+    python -c "!PYTHONPATH_CMD!"
     if errorlevel 1 (
         echo ❌ Failed to copy to releases directory
+        echo Error details:
+        echo PROJECT_ROOT=!PROJECT_ROOT!
+        echo PACKAGING_DIR=!PACKAGING_DIR!
+        echo Current directory=%cd%
+        echo Python path command:
+        echo !PYTHONPATH_CMD!
         exit /b 1
     )
     
