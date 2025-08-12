@@ -87,8 +87,16 @@ else
 fi
 
 # Check if build was successful
-APP_PATH="$DIST_DIR/md2docx.app"
-if [ -d "$APP_PATH" ]; then
+# 检查实际生成的应用名称
+if [ -d "$DIST_DIR/md2docx.app" ]; then
+    APP_PATH="$DIST_DIR/md2docx.app"
+elif [ -d "$DIST_DIR/Markdown to Word.app" ]; then
+    APP_PATH="$DIST_DIR/Markdown to Word.app"
+else
+    APP_PATH=""
+fi
+
+if [ -n "$APP_PATH" ] && [ -d "$APP_PATH" ]; then
     echo -e "${GREEN}✅ Build successful!${NC}"
     echo "App created at: $APP_PATH"
     
@@ -134,10 +142,7 @@ sys.path.append('$PROJECT_ROOT/packaging')
 from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink
 
 # Copy DMG if exists, otherwise copy .app
-if '$DIST_DIR/$DMG_NAME'.replace('$DIST_DIR/', '').startswith('/'):
-    dmg_path = '$DIST_DIR/$DMG_NAME'
-else:
-    dmg_path = '$DIST_DIR/$DMG_NAME'
+dmg_path = '$DIST_DIR/$DMG_NAME'
 
 import os
 if os.path.exists(dmg_path):

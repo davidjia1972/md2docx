@@ -84,6 +84,10 @@ def copy_to_releases(source_path, platform_name, version=None):
         print(f"Warning: Source path does not exist: {source}")
         return None
     
+    print(f"Copying {source} to releases directory for {platform_name}")
+    print(f"Source exists: {source.exists()}")
+    print(f"Source is dir: {source.is_dir()}")
+    
     # 根据平台决定复制策略
     if platform_name == 'macos':
         if source.suffix == '.dmg':
@@ -108,10 +112,21 @@ def copy_to_releases(source_path, platform_name, version=None):
         dest_dir = releases_dir / release_name
         dest_zip = releases_dir / f"{release_name}.zip"
         
+        print(f"Windows build - source: {source}")
+        print(f"Windows build - dest_dir: {dest_dir}")
+        print(f"Windows build - dest_zip: {dest_zip}")
+        
         if source.is_dir():
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
             # 创建 ZIP 文件，修复文件名重复添加扩展名的问题
-            shutil.make_archive(str(dest_zip.with_suffix('')), 'zip', dest_dir)
+            zip_base_name = str(dest_zip.with_suffix(''))
+            print(f"Creating zip archive with base name: {zip_base_name}")
+            try:
+                result = shutil.make_archive(zip_base_name, 'zip', dest_dir)
+                print(f"Created zip archive: {result}")
+            except Exception as e:
+                print(f"Failed to create zip archive: {e}")
+                raise
             # 可选：删除临时目录
             # shutil.rmtree(dest_dir)
         else:
@@ -138,6 +153,11 @@ def copy_to_releases(source_path, platform_name, version=None):
             shutil.copy2(appimage_source, appimage_dest)
     
     print(f"Copied build artifacts to: {releases_dir}")
+    # 列出发布目录中的文件
+    if releases_dir.exists():
+        print("Files in releases directory:")
+        for f in releases_dir.iterdir():
+            print(f"  {f.name}")
     return releases_dir
 
 

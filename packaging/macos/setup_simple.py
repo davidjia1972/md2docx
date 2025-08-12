@@ -28,7 +28,7 @@ if version_file.exists():
         VERSION = version
 
 NAME = "md2docx"
-DISPLAY_NAME = "Markdown to Word"
+DISPLAY_NAME = "md2docx"  # 统一应用名称为 md2docx
 
 # 数据文件 - 简化处理
 DATA_FILES = []
