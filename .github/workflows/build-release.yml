@@ -181,6 +181,13 @@ jobs:
             ls -la releases/v${{ needs.prepare.outputs.version }}/ 2>/dev/null || echo "Release directory does not exist or is empty"
             echo "Contents of entire releases directory:"
             find releases/ -type f 2>/dev/null || echo "No files found in releases directory"
+            echo "Checking if dist directory exists:"
+            if [[ -d packaging/windows/dist ]]; then
+              echo "Windows dist directory exists:"
+              ls -la packaging/windows/dist/
+            else
+              echo "Windows dist directory does not exist"
+            fi
             exit 1
           fi
         elif [[ "${{ matrix.platform }}" == "macos" ]]; then

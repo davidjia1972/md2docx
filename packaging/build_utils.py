@@ -78,6 +78,8 @@ def copy_to_releases(source_path, platform_name, version=None):
     releases_dir = ensure_releases_dir(version)
     release_name = get_release_name(platform_name, version)
     
+    # 处理路径分隔符，确保兼容Windows
+    source_path = str(source_path).replace('/', os.sep).replace('\\', os.sep)
     source = Path(source_path)
     
     if not source.exists():
@@ -118,17 +120,19 @@ def copy_to_releases(source_path, platform_name, version=None):
         
         if source.is_dir():
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
-            # 创建 ZIP 文件，修复文件名重复添加扩展名的问题
+            # 创建 ZIP 文件，使用更明确的参数
             zip_base_name = str(dest_zip.with_suffix(''))
             print(f"Creating zip archive with base name: {zip_base_name}")
             try:
-                result = shutil.make_archive(zip_base_name, 'zip', dest_dir)
+                result = shutil.make_archive(zip_base_name, 'zip', root_dir=dest_dir.parent, base_dir=dest_dir.name)
                 print(f"Created zip archive: {result}")
+                
+                # 删除临时目录
+                shutil.rmtree(dest_dir)
             except Exception as e:
                 print(f"Failed to create zip archive: {e}")
+                # 即使创建ZIP失败，也保留目录
                 raise
-            # 可选：删除临时目录
-            # shutil.rmtree(dest_dir)
         else:
             shutil.copy2(source, dest_dir)
     

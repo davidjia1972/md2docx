@@ -110,8 +110,23 @@ if exist "%EXE_PATH%" (
     
     REM Copy to releases directory
     echo Copying to releases directory...
-    echo Source path for copy: %PACKAGING_DIR%\dist\md2docx
-    python -c "import sys; import os; sys.path.append('%PROJECT_ROOT%/packaging'); from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink; source_path = r'%PACKAGING_DIR%/dist/md2docx'; print(f'Source path exists: {os.path.exists(source_path)}'); print(f'Source path is dir: {os.path.isdir(source_path)}'); releases_dir = copy_to_releases(source_path, 'windows'); releases_dir and [calculate_checksums(releases_dir), update_release_notes(), create_latest_symlink(), print(f'✅ Release artifacts ready in: {releases_dir}')]"
+    set "SOURCE_PATH=%PACKAGING_DIR%\dist\md2docx"
+    echo Source path for copy: %SOURCE_PATH%
+    
+    REM Check if source path exists before calling Python
+    if exist "%SOURCE_PATH%" (
+        echo Source path exists, proceeding with copy...
+        python -c "import sys; import os; sys.path.append('%PROJECT_ROOT%\packaging'); from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink; source_path = r'%SOURCE_PATH%'; print(f'Source path exists: {os.path.exists(source_path)}'); print(f'Source path is dir: {os.path.isdir(source_path)}'); print(f'Absolute path: {os.path.abspath(source_path)}'); releases_dir = copy_to_releases(source_path, 'windows'); print(f'Releases dir: {releases_dir}'); releases_dir and [calculate_checksums(releases_dir), update_release_notes(), create_latest_symlink(), print(f'✅ Release artifacts ready in: {releases_dir}')]"
+    ) else (
+        echo ❌ Source path does not exist: %SOURCE_PATH%
+        echo Contents of dist directory:
+        if exist "%PACKAGING_DIR%\dist" (
+            dir "%PACKAGING_DIR%\dist"
+        ) else (
+            echo Dist directory does not exist
+        )
+        exit /b 1
+    )
     
     echo.
     echo 🎉 Windows build completed successfully!
