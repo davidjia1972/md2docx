@@ -17,6 +17,7 @@ from pathlib import Path
 # Get project root directory
 project_root = Path(__file__).parent.parent.parent
 src_dir = project_root / "src"
+packaging_dir = Path(__file__).parent
 
 # Build configuration
 def build_windows_app():
@@ -76,13 +77,13 @@ def build_windows_app():
         "--optimize", "1",
         "--strip",
         
-        # Output directory
-        "--distpath", "dist",
-        "--workpath", "build",
-        "--specpath", ".",
+        # Output directory - 使用绝对路径
+        "--distpath", str(packaging_dir / "dist"),
+        "--workpath", str(packaging_dir / "build"),
+        "--specpath", str(packaging_dir),
         
         # Version info
-        "--version-file", "version_info.txt",
+        "--version-file", str(packaging_dir / "version_info.txt"),
     ]
     
     # Create version info file
@@ -146,7 +147,7 @@ VSVersionInfo(
 )
 """
     
-    with open("version_info.txt", "w", encoding="utf-8") as f:
+    with open(packaging_dir / "version_info.txt", "w", encoding="utf-8") as f:
         f.write(version_info_content)
     
     print("Created version_info.txt")

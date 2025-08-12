@@ -125,6 +125,8 @@ if exist "%EXE_PATH%" (
         ) else (
             echo Dist directory does not exist
         )
+        echo Contents of packaging directory:
+        dir "%PACKAGING_DIR%"
         exit /b 1
     )
     
@@ -152,6 +154,8 @@ if exist "%EXE_PATH%" (
     )
     echo Contents of current directory:
     dir
+    echo Contents of packaging directory:
+    dir "%PACKAGING_DIR%"
     pause
     exit /b 1
 )
