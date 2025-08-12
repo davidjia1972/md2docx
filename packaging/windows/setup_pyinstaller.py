@@ -94,7 +94,7 @@ def build_windows_app():
     # Create version info file
     create_version_info(version)
     
-    print("🔨 Building Windows executable with PyInstaller...")
+    print("Building Windows executable with PyInstaller...")
     print(f"Arguments: {' '.join(args)}")
     
     # Run PyInstaller
