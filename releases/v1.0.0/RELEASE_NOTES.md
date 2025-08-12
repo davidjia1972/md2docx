@@ -4,11 +4,11 @@
 **Build Date**: TBD  
 **Platforms**: macOS, Windows, Linux
 
-## 🎉 Initial Release
+## Initial Release
 
 This is the first stable release of md2docx - a cross-platform GUI application for converting Markdown files to Microsoft Word documents.
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 - **Batch Conversion**: Convert multiple Markdown files at once
@@ -38,7 +38,7 @@ This is the first stable release of md2docx - a cross-platform GUI application f
 - **Error Handling**: Comprehensive error reporting and recovery
 - **Background Processing**: Non-blocking UI during conversions
 
-## 🔧 Technical Specifications
+## Technical Specifications
 
 ### System Requirements
 - **Python**: 3.8 or later (bundled in releases)
@@ -76,7 +76,7 @@ This is the first stable release of md2docx - a cross-platform GUI application f
   - Minimum version: 2.0+
   - Recommended: Latest stable version
 
-## 📦 Installation
+## Installation
 
 ### macOS
 ```bash
@@ -120,7 +120,7 @@ pip install -r requirements.txt
 python src/main.py
 ```
 
-## 🗂️ File Locations
+## File Locations
 
 Application stores user data in platform-standard locations:
 
@@ -137,7 +137,7 @@ Application stores user data in platform-standard locations:
 ### User Templates
 Stored alongside configuration files in `templates/` subdirectory.
 
-## 🛠️ Build Information
+## Build Information
 
 ### Build Environment
 - **Python**: 3.11.x
@@ -152,7 +152,7 @@ Stored alongside configuration files in `templates/` subdirectory.
 - **Windows Defender**: Builds are scanned and should be clean
 - **VirusTotal**: Release artifacts are automatically scanned
 
-## 📈 Performance
+## Performance
 
 ### Conversion Speed
 - **Small files** (< 1MB): Near-instant
@@ -169,7 +169,7 @@ Stored alongside configuration files in `templates/` subdirectory.
 - **User data**: Minimal (configs + templates)
 - **Cache**: Temporary files cleaned automatically
 
-## 🔍 Known Issues
+## Known Issues
 
 ### Limitations
 1. **Very large files** (>50MB) may cause UI freezing
@@ -187,7 +187,7 @@ Stored alongside configuration files in `templates/` subdirectory.
 - For complex formatting: Use simpler Markdown syntax
 - For equations: Install LaTeX distribution (MiKTeX, MacTeX, etc.)
 
-## 🔐 Security
+## Security
 
 ### Application Signing
 - **macOS**: Code signed with Developer ID (if available)
@@ -204,7 +204,7 @@ Stored alongside configuration files in `templates/` subdirectory.
 - **Write access**: Output directory and user data directories
 - **No system modification**: Application is self-contained
 
-## 🤝 Contributing
+## Contributing
 
 This is the initial release. Future contributions welcome:
 - **Bug reports**: GitHub Issues
@@ -212,11 +212,11 @@ This is the initial release. Future contributions welcome:
 - **Translations**: Additional language support
 - **Code contributions**: Pull requests welcome
 
-## 📋 Changelog Summary
+## Changelog Summary
 
 Initial release - all features are new in v1.0.0.
 
-## 🔮 Future Roadmap
+## Future Roadmap
 
 Potential features for future releases:
 - **Cloud templates**: Template sharing and download
