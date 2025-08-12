@@ -17,6 +17,7 @@ from pathlib import Path
 # Get project root directory
 project_root = Path(__file__).parent.parent.parent
 src_dir = project_root / "src"
+packaging_dir = Path(__file__).parent.absolute()
 
 def build_linux_app():
     """Build Linux executable with PyInstaller"""
@@ -74,10 +75,10 @@ def build_linux_app():
         "--optimize", "1",
         "--strip",
         
-        # Output directory
-        "--distpath", "dist",
-        "--workpath", "build", 
-        "--specpath", ".",
+        # Output directory - 使用绝对路径
+        "--distpath", str(packaging_dir / "dist"),
+        "--workpath", str(packaging_dir / "build"), 
+        "--specpath", str(packaging_dir),
     ]
     
     print("🐧 Building Linux executable with PyInstaller...")
@@ -88,15 +89,19 @@ def build_linux_app():
     
     print("✅ Build completed!")
     
-    # Create .desktop file for Linux desktop integration
-    create_desktop_file(app_name, version)
+    # Create .desktop file in the dist directory
+    desktop_file = packaging_dir / "dist" / f"{app_name}.desktop"
+    create_desktop_file(app_name, version, desktop_file)
     
     # Create AppImage if appimage-builder is available
     try_create_appimage(app_name, version)
 
 
-def create_desktop_file(app_name, version):
+def create_desktop_file(app_name, version, desktop_file=None):
     """Create .desktop file for Linux desktop integration"""
+    
+    if desktop_file is None:
+        desktop_file = Path("dist") / f"{app_name}.desktop"
     
     desktop_content = f"""[Desktop Entry]
 Name=Markdown to Word
@@ -109,10 +114,9 @@ Type=Application
 Categories=Office;WordProcessor;
 MimeType=text/markdown;text/x-markdown;
 StartupNotify=true
-StartupWMClass=md2docx
+Version={version}
 """
     
-    desktop_file = Path("dist") / f"{app_name}.desktop"
     with open(desktop_file, "w", encoding="utf-8") as f:
         f.write(desktop_content)
     
@@ -203,7 +207,8 @@ exec "./{app_name}" "$@"
 
 if __name__ == "__main__":
     # Change to packaging directory
-    os.chdir(Path(__file__).parent)
+    script_dir = Path(__file__).parent.absolute()
+    os.chdir(script_dir)
     
     # Add src to Python path
     sys.path.insert(0, str(src_dir))

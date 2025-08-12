@@ -119,17 +119,20 @@ def copy_to_releases(source_path, platform_name, version=None):
         print(f"Windows build - dest_zip: {dest_zip}")
         
         if source.is_dir():
+            # 先复制目录
             shutil.copytree(source, dest_dir, dirs_exist_ok=True)
-            # 创建 ZIP 文件，修复文件名重复添加扩展名的问题
+            # 创建 ZIP 文件
             zip_base_name = str(dest_zip.with_suffix(''))
             print(f"Creating zip archive with base name: {zip_base_name}")
             try:
+                # 使用正确的参数创建ZIP文件
                 result = shutil.make_archive(zip_base_name, 'zip', root_dir=dest_dir.parent, base_dir=dest_dir.name)
                 print(f"Created zip archive: {result}")
                 
                 # 删除临时目录
                 if dest_dir.exists():
                     shutil.rmtree(dest_dir)
+                    print(f"Removed temporary directory: {dest_dir}")
             except Exception as e:
                 print(f"Failed to create zip archive: {e}")
                 # 即使创建ZIP失败，也保留目录

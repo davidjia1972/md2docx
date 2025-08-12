@@ -84,11 +84,16 @@ cd /d "%PACKAGING_DIR%"
 if exist build rmdir /s /q build
 if exist dist rmdir /s /q dist
 
+echo Contents of packaging directory before build:
+dir
+
 REM Build the executable
 echo Building Windows executable with PyInstaller...
 python setup_pyinstaller.py
 if %ERRORLEVEL% neq 0 (
     echo Error: Build failed
+    echo Contents of packaging directory after failed build:
+    dir
     pause
     exit /b 1
 )
@@ -158,6 +163,16 @@ if exist "%EXE_PATH%" (
     dir "%PACKAGING_DIR%"
     pause
     exit /b 1
+)
+
+echo Final contents of packaging directory:
+dir "%PACKAGING_DIR%"
+
+echo Final contents of dist directory:
+if exist "%PACKAGING_DIR%\dist" (
+    dir "%PACKAGING_DIR%\dist"
+) else (
+    echo Dist directory does not exist
 )
 
 pause

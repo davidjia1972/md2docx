@@ -27,17 +27,7 @@ echo "Version: $VERSION"
 echo -e "${YELLOW}Checking dependencies...${NC}"
 
 # Check Python version
-PYTHON_CMD="python3"
-if ! command -v $PYTHON_CMD &> /dev/null; then
-    PYTHON_CMD="python"
-    if ! command -v $PYTHON_CMD &> /dev/null; then
-        echo -e "${RED}Error: Python not found${NC}"
-        echo "Please install Python 3.8 or higher"
-        exit 1
-    fi
-fi
-
-PYTHON_VERSION=$($PYTHON_CMD --version 2>&1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
+PYTHON_VERSION=$(python3 --version 2>&1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
 echo "Python version: $PYTHON_VERSION"
 
 # Check if PyInstaller is installed
@@ -71,10 +61,11 @@ rm -rf "$BUILD_DIR" "$DIST_DIR"
 # Build the executable
 echo -e "${YELLOW}Building Linux executable with PyInstaller...${NC}"
 cd "$PACKAGING_DIR"
-$PYTHON_CMD setup_pyinstaller.py
+python3 setup_pyinstaller.py
 
 # Check if build was successful
-EXE_PATH="$DIST_DIR/md2docx/md2docx"
+APP_NAME="md2docx"
+EXE_PATH="$DIST_DIR/$APP_NAME/$APP_NAME"
 if [ -f "$EXE_PATH" ]; then
     echo -e "${GREEN}✅ Build successful!${NC}"
     echo "Executable created at: $EXE_PATH"
@@ -94,40 +85,35 @@ if [ -f "$EXE_PATH" ]; then
         echo -e "${YELLOW}⚠️  Executable launch test completed${NC}"
     fi
     
-    # Create installation script
+    # Create install script
+    echo -e "${YELLOW}Creating install script...${NC}"
     cat > "$DIST_DIR/install.sh" << 'EOF'
 #!/bin/bash
 # Installation script for md2docx
 
 set -e
 
+# Default installation paths
+USER_INSTALL_DIR="$HOME/.local/bin"
+USER_BIN_DIR="$HOME/.local/bin"
+DESKTOP_FILE="$HOME/.local/share/applications/md2docx.desktop"
+
+# Check if running as root
+if [ "$EUID" -eq 0 ]; then
+    echo "Running as root"
+    USER_INSTALL_DIR="/usr/local/bin"
+    DESKTOP_FILE="/usr/share/applications/md2docx.desktop"
+fi
+
 APP_NAME="md2docx"
-INSTALL_DIR="/opt/$APP_NAME"
-BIN_LINK="/usr/local/bin/$APP_NAME"
-DESKTOP_FILE="$HOME/.local/share/applications/$APP_NAME.desktop"
 
 echo "Installing $APP_NAME..."
 
-# Create installation directory (requires sudo)
-if [ "$EUID" -eq 0 ]; then
-    # Running as root
-    mkdir -p "$INSTALL_DIR"
-    cp -r "$APP_NAME"/* "$INSTALL_DIR/"
-    chmod +x "$INSTALL_DIR/$APP_NAME"
-    
-    # Create symlink
-    ln -sf "$INSTALL_DIR/$APP_NAME" "$BIN_LINK"
-    
-    echo "Installed to $INSTALL_DIR"
-    echo "Symlink created at $BIN_LINK"
-else
-    # Running as user - install to home directory
-    USER_INSTALL_DIR="$HOME/.local/opt/$APP_NAME"
-    USER_BIN_DIR="$HOME/.local/bin"
-    
-    mkdir -p "$USER_INSTALL_DIR"
-    mkdir -p "$USER_BIN_DIR"
-    
+# Create installation directory
+mkdir -p "$USER_INSTALL_DIR"
+
+# Install application files
+if [ -d "$APP_NAME" ]; then
     cp -r "$APP_NAME"/* "$USER_INSTALL_DIR/"
     chmod +x "$USER_INSTALL_DIR/$APP_NAME"
     
@@ -171,12 +157,12 @@ EOF
     
     # Copy to releases directory
     echo -e "${YELLOW}Copying to releases directory...${NC}"
-    $PYTHON_CMD -c "
+    python3 -c "
 import sys
 sys.path.append('$PROJECT_ROOT/packaging')
 from build_utils import copy_to_releases, calculate_checksums, update_release_notes, create_latest_symlink
 
-releases_dir = copy_to_releases('$DIST_DIR/md2docx', 'linux')
+releases_dir = copy_to_releases('$DIST_DIR/$APP_NAME', 'linux')
 
 if releases_dir:
     calculate_checksums(releases_dir)
