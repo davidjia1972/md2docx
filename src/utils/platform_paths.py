@@ -173,14 +173,9 @@ def copy_default_resources_if_needed(app_dirs: Dict[str, Path]) -> None:
         return  # 已经初始化过了
     
     try:
-        # 复制默认模板（如果存在）
-        default_templates_dir = get_bundle_resource_path('templates')
-        if default_templates_dir.exists():
-            import shutil
-            for template_file in default_templates_dir.glob('*.docx'):
-                target_path = app_dirs['templates'] / template_file.name
-                if not target_path.exists():
-                    shutil.copy2(template_file, target_path)
+        # 不复制默认模板 - 内置模板应该从bundle中直接使用
+        # 用户模板目录仅用于用户自定义的模板文件
+        pass
         
         # 复制默认配置（如果存在）
         default_config = get_bundle_resource_path('config/settings.json')

@@ -6,6 +6,7 @@
 import json
 import locale
 import logging
+import sys
 from pathlib import Path
 from typing import Dict, Optional, Any
 from PySide6.QtCore import QObject, Signal
@@ -28,10 +29,19 @@ class I18nManager(QObject):
             "critical_missing": set()
         }
         
-        # 获取项目根目录
+        # 获取项目根目录和资源目录
         self.root_dir = Path(__file__).parent.parent.parent
-        self.locales_dir = self.root_dir / "locales"
-        self.config_dir = self.root_dir / "config"
+        
+        # 检查是否在PyInstaller打包环境中
+        if hasattr(sys, '_MEIPASS'):
+            # PyInstaller打包后的环境
+            bundle_dir = Path(sys._MEIPASS)
+            self.locales_dir = bundle_dir / "locales"
+            self.config_dir = bundle_dir / "config" if (bundle_dir / "config").exists() else self.root_dir / "config"
+        else:
+            # 开发环境
+            self.locales_dir = self.root_dir / "locales"
+            self.config_dir = self.root_dir / "config"
         
         # 初始化
         self._load_language_config()

@@ -31,7 +31,7 @@ PYTHON_VERSION=$(python3 --version 2>&1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+')
 echo "Python version: $PYTHON_VERSION"
 
 # Check if PyInstaller is installed
-if ! $PYTHON_CMD -c "import PyInstaller" 2>/dev/null; then
+if ! python3 -c "import PyInstaller" 2>/dev/null; then
     echo -e "${RED}Error: PyInstaller not found${NC}"
     echo "Installing PyInstaller..."
     pip3 install pyinstaller

@@ -48,6 +48,7 @@ def build_linux_app():
         "--add-data", f"{project_root / 'locales'}:locales",
         "--add-data", f"{project_root / 'templates'}:templates", 
         "--add-data", f"{project_root / 'assets' / 'icons'}:assets/icons",
+        "--add-data", f"{project_root / 'config'}:config",
         
         # Hidden imports
         "--hidden-import", "PySide6.QtCore",
@@ -71,9 +72,15 @@ def build_linux_app():
         "--exclude-module", "PIL",
         "--exclude-module", "wx",
         
-        # Optimization
-        "--optimize", "1",
+        # Optimization 
+        "--optimize", "2",
         "--strip",
+        "--noupx",  # Disable UPX compression to avoid issues
+        
+        # More selective imports to reduce size
+        "--collect-submodules", "PySide6.QtCore",
+        "--collect-submodules", "PySide6.QtWidgets",
+        "--collect-submodules", "PySide6.QtGui",
         
         # Output directory - 使用绝对路径
         "--distpath", str(packaging_dir / "dist"),

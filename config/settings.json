@@ -4,14 +4,14 @@
     "user_templates": []
   },
   "output_settings": {
-    "overwrite_files": false,
+    "overwrite_files": true,
     "naming_strategy": "increment",
     "preview_outputs": true,
     "remove_emoji": true
   },
   "ui": {
     "recursive_scan": true,
-    "window_geometry": null,
+    "window_geometry": "AdnQywADAAAAAABGAAAALgAAAz0AAAM3AAAARgAAAEoAAAM9AAADNwAAAAAAAAAABegAAABGAAAASgAAAz0AAAM3",
     "window_state": null,
     "language": "auto"
   },

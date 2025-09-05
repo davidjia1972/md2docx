@@ -1,7 +1,7 @@
 # md2docx v1.0.0 Release Notes
 
-**Release Date**: TBD  
-**Build Date**: TBD  
+**Release Date**: 2025-08-14  
+**Build Date**: 2025-08-14 11:01:13 UTC  
 **Platforms**: macOS, Windows, Linux
 
 ## Initial Release

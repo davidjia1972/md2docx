@@ -44,17 +44,19 @@ def build_windows_app():
     args = [
         str(src_dir / "main.py"),  # Main script
         "--name", app_name,
-        "--onedir",  # Create one directory (easier for debugging)
-        "--windowed",  # No console window
+        "--onedir",  # Create directory bundle
+        "--windowed",  # GUI app, no console window
         "--clean",  # Clean cache
+        "--noconfirm",  # Overwrite output without confirmation
         
         # Icon
         "--icon", str(project_root / "assets" / "icons" / "app_icon.ico"),
         
-        # Additional data files
-        "--add-data", f"{project_root / 'locales'};locales",
-        "--add-data", f"{project_root / 'templates'};templates", 
-        "--add-data", f"{project_root / 'assets' / 'icons'};assets/icons",
+        # Additional data files - use Windows path separator
+        "--add-data", f"{project_root}\\locales;locales",
+        "--add-data", f"{project_root}\\templates;templates", 
+        "--add-data", f"{project_root}\\assets\\icons;assets\\icons",
+        "--add-data", f"{project_root}\\config;config",
         
         # Hidden imports
         "--hidden-import", "PySide6.QtCore",
@@ -78,9 +80,15 @@ def build_windows_app():
         "--exclude-module", "PIL",
         "--exclude-module", "wx",
         
-        # Optimization
-        "--optimize", "1",
-        "--strip",
+        # Optimization and bundling - remove strip and optimize to avoid tool dependencies
+        "--noupx",  # Disable UPX compression to avoid DLL issues
+        
+        # Collect all necessary DLLs
+        "--collect-all", "PySide6",
+        "--collect-submodules", "PySide6",
+        
+        # Include Python runtime DLLs - more specific approach
+        "--collect-all", "encodings",
         
         # Output directory - 使用绝对路径
         "--distpath", str(packaging_dir / "dist"),

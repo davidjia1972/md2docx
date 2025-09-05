@@ -94,13 +94,14 @@ class PandocWrapper:
             return None
         
         try:
-            # Extract version number from string like "pandoc 3.7.0.2"
+            # Extract version number from string like "pandoc 3.7.0.2" or "pandoc.EXE 3.7.0.2"
             import re
-            match = re.search(r'pandoc\s+(\d+)\.(\d+)(?:\.(\d+))?', version_str.lower())
+            match = re.search(r'pandoc(?:\.exe)?\s+(\d+)\.(\d+)(?:\.(\d+))?(?:\.(\d+))?', version_str.lower())
             if match:
                 major = int(match.group(1))
                 minor = int(match.group(2))
                 patch = int(match.group(3)) if match.group(3) else 0
+                # 忽略第四个数字，只使用前三位进行版本比较
                 return (major, minor, patch)
             
             return None

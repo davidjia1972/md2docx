@@ -45,21 +45,21 @@ jobs:
           - os: windows-latest
             platform: windows
             build_script: packaging\windows\build_windows.bat
-            artifact_pattern: "releases/v*/md2docx-v*-Windows.*"
+            artifact_pattern: "packaging/windows/dist/md2docx-v*-windows.zip"
             
           # macOS Intel - 构建 macOS Intel 版本
           - os: macos-12
             platform: macos
-            arch: x86_64
+            arch: intel
             build_script: packaging/macos/build_macos.sh
-            artifact_pattern: "releases/v*/md2docx-v*-macOS-x86_64.*"
+            artifact_pattern: "releases/v*/md2docx-v*-macOS-intel.*"
             
           # macOS Apple Silicon - 构建 macOS Apple Silicon 版本  
           - os: macos-latest
             platform: macos
-            arch: arm64
+            arch: silicon
             build_script: packaging/macos/build_macos.sh
-            artifact_pattern: "releases/v*/md2docx-v*-macOS-arm64.*"
+            artifact_pattern: "releases/v*/md2docx-v*-macOS-silicon.*"
     
     runs-on: ${{ matrix.os }}
     
@@ -152,22 +152,20 @@ jobs:
         elif [[ "${{ matrix.platform }}" == "windows" ]]; then
           # 增强Windows验证逻辑，提供更多调试信息
           echo "Checking for Windows ZIP file..."
-          if ls releases/v$VERSION/md2docx-v$VERSION-Windows.zip 1> /dev/null 2>&1; then
-            echo "✅ Found Windows ZIP file"
+          if ls packaging/windows/dist/md2docx-v$VERSION-windows.zip 1> /dev/null 2>&1; then
+            echo "✅ Found Windows ZIP file in packaging/windows/dist/"
+          elif ls releases/v$VERSION/md2docx-v$VERSION-Windows.zip 1> /dev/null 2>&1; then
+            echo "✅ Found Windows ZIP file in releases/"
           elif ls releases/v$VERSION/md2docx-v$VERSION-Windows/ 1> /dev/null 2>&1; then
             echo "✅ Found Windows directory"
           else
             echo "❌ Windows build artifacts not found, checking what files exist..."
+            echo "Contents of packaging/windows/dist:"
+            ls -la packaging/windows/dist/ 2>/dev/null || echo "packaging/windows/dist directory does not exist"
+            echo "Contents of releases/v$VERSION/:"
             ls -la releases/v$VERSION/ 2>/dev/null || echo "Release directory does not exist or is empty"
             echo "Contents of entire releases directory:"
             find releases/ -type f 2>/dev/null || echo "No files found in releases directory"
-            echo "Checking if dist directory exists:"
-            if [[ -d packaging/windows/dist ]]; then
-              echo "Windows dist directory exists:"
-              ls -la packaging/windows/dist/
-            else
-              echo "Windows dist directory does not exist"
-            fi
             exit 1
           fi
         elif [[ "${{ matrix.platform }}" == "macos" ]]; then
@@ -243,8 +241,8 @@ jobs:
         
         | 平台 | 文件 | 说明 |
         |------|------|------|
-        | 🍎 **macOS Intel** | `md2docx-v'"$VERSION"'-macOS-x86_64.dmg` | Intel Mac (macOS 10.15+) |
-        | 🍎 **macOS Apple Silicon** | `md2docx-v'"$VERSION"'-macOS-arm64.dmg` | Apple Silicon Mac (macOS 11.0+) |
+        | 🍎 **macOS Intel** | `md2docx-v'"$VERSION"'-macOS-intel.dmg` | Intel Mac (macOS 10.15+) |
+        | 🍎 **macOS Apple Silicon** | `md2docx-v'"$VERSION"'-macOS-silicon.dmg` | Apple Silicon Mac (macOS 11.0+) |
         | 🪟 **Windows** | `md2docx-v'"$VERSION"'-Windows.zip` | Windows 10+ |
         | 🐧 **Linux** | `md2docx-v'"$VERSION"'-Linux.tar.gz` | 大部分发行版 |
         | 🐧 **Linux** | `md2docx-v'"$VERSION"'-x86_64.AppImage` | 便携版本 |
@@ -254,8 +252,8 @@ jobs:
         **查看您的 Mac 架构**：
         - 点击苹果菜单 > 关于本机
         - 查看 "芯片" 或 "处理器" 信息：
-          - **Apple M1/M2/M3** 系列 → 下载 `arm64` 版本
-          - **Intel** 处理器 → 下载 `x86_64` 版本
+          - **Apple M1/M2/M3** 系列 → 下载 `silicon` 版本
+          - **Intel** 处理器 → 下载 `intel` 版本
         
         ## 🔐 文件验证
         

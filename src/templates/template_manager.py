@@ -19,7 +19,12 @@ class TemplateManager:
         app_dirs = get_app_dirs()
         
         # Built-in templates from app bundle/resources
-        self.builtin_template_dir = Path(__file__).parent.parent.parent / "templates"
+        if hasattr(sys, '_MEIPASS'):
+            # PyInstaller打包后的环境
+            self.builtin_template_dir = Path(sys._MEIPASS) / "templates"
+        else:
+            # 开发环境
+            self.builtin_template_dir = Path(__file__).parent.parent.parent / "templates"
         
         # User templates in platform-specific directory
         self.user_template_dir = app_dirs['templates']

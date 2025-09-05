@@ -28,19 +28,19 @@ def get_current_platform():
         return "unknown"
 
 def build_macos():
-    """构建 macOS 版本"""
-    print("🍎 Building for macOS...")
+    """构建 macOS 版本 - 使用快速PyInstaller方案"""
+    print("🍎 Building for macOS with PyInstaller (fast)...")
     
-    script_path = Path(__file__).parent / "packaging" / "macos" / "build_macos.sh"
+    script_path = Path(__file__).parent / "packaging" / "macos" / "build_macos_fast.py"
     if not script_path.exists():
         print(f"Error: Build script not found: {script_path}")
         return False
     
     try:
-        # 执行构建脚本
+        # 执行快速的PyInstaller构建脚本
         result = subprocess.run(
-            ["bash", str(script_path)],
-            cwd=script_path.parent,
+            ["python3", str(script_path)],
+            cwd=Path(__file__).parent,  # 在项目根目录执行
             check=True
         )
         return result.returncode == 0
@@ -151,7 +151,14 @@ def main():
     if success:
         print(f"\n🎉 Build completed successfully!")
         print(f"\nBuilt artifacts can be found in:")
-        print(f"  packaging/{target_platform}/dist/")
+        if target_platform == "macos":
+            print(f"  packaging/macos/dist/")
+        elif target_platform == "windows":
+            print(f"  packaging/windows/dist/")
+        elif target_platform == "linux":
+            print(f"  packaging/linux/dist/")
+        else:
+            print(f"  packaging/{target_platform}/dist/")
     else:
         print(f"\n❌ Build failed!")
         return 1

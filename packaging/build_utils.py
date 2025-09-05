@@ -35,7 +35,7 @@ def get_build_timestamp():
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
-def get_release_name(platform_name, version=None):
+def get_release_name(platform_name, version=None, arch=None):
     """生成发布文件名"""
     if version is None:
         version = get_version()
@@ -47,7 +47,11 @@ def get_release_name(platform_name, version=None):
     }
     
     platform_display = platform_map.get(platform_name, platform_name)
-    return f"md2docx-v{version}-{platform_display}"
+    
+    if arch and platform_name == 'macos':
+        return f"md2docx-v{version}-{platform_display}-{arch}"
+    else:
+        return f"md2docx-v{version}-{platform_display}"
 
 
 def get_platform_extension(platform_name):
@@ -70,13 +74,13 @@ def ensure_releases_dir(version=None):
     return releases_dir
 
 
-def copy_to_releases(source_path, platform_name, version=None):
+def copy_to_releases(source_path, platform_name, version=None, arch=None):
     """复制构建产物到发布目录"""
     if version is None:
         version = get_version()
     
     releases_dir = ensure_releases_dir(version)
-    release_name = get_release_name(platform_name, version)
+    release_name = get_release_name(platform_name, version, arch)
     
     # 处理路径分隔符，确保兼容Windows
     source_path = str(source_path).replace('/', os.sep).replace('\\', os.sep)
