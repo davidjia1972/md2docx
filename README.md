@@ -68,6 +68,8 @@ pip install -r requirements.txt
 
 ### 3. Install Pandoc
 
+You can download Pandoc from [https://github.com/jgm/pandoc/releases](https://github.com/jgm/pandoc/releases)
+
 **macOS:**
 ```bash
 # Using Homebrew (recommended)
