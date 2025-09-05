@@ -103,7 +103,7 @@ jobs:
       if: matrix.platform == 'macos'
       run: |
         brew install pandoc create-dmg
-        pip install py2app
+        pip install pyinstaller py2app
         
     - name: Build Windows application
       env:
