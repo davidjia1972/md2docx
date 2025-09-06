@@ -48,7 +48,7 @@ jobs:
             artifact_pattern: "packaging/windows/dist/md2docx-v*-windows.zip"
             
           # macOS Intel - 构建 macOS Intel 版本
-          - os: macos-12
+          - os: macos-13
             platform: macos
             arch: intel
             build_script: packaging/macos/build_macos.sh
